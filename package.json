@@ -1,0 +1,45 @@
+{
+  "name": "hyperchain-starter-kit",
+  "version": "1.0.0",
+  "description": "Tools to run a hyperchain on Aeternity",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.json",
+    "dev": "nodemon -e ts -w ./src -x npm run watch:serve",
+    "watch:serve": "node --loader ts-node/esm src/index.ts"
+  },
+  "keywords": [
+    "aeternity",
+    "hyperchain"
+  ],
+  "author": "Aeternity Crypto Foundation",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.7.3",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.8.2",
+    "eslint-plugin-markdown": "^3.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@aeternity/aepp-sdk": "^12.1.2",
+    "bip39": "^3.0.4",
+    "chalk": "^5.0.1",
+    "figlet": "^1.5.2",
+    "unique-names-generator": "^4.7.1",
+    "yargs": "^17.5.1",
+    "zod": "^3.18.0"
+  }
+}
