@@ -2,13 +2,25 @@ import z from "zod";
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
-import { ensureDir, toJSON } from "./utils.js";
+import { ensureDir, initFilePath } from "./utils.js";
 import { SCHEMA_BIGINT } from "./yamlExtend.js";
+import aesdk from "@aeternity/aepp-sdk";
+const { toAettos } = aesdk;
 
-const InitConfig = z.object({
-  validators: z.object({ count: z.bigint(), balance: z.bigint() }),
+export const InitConfig = z.object({
+  globalUnstakeDelay: z.bigint(),
+  validators: z.object({
+    count: z.bigint(),
+    balance: z.bigint(),
+    validatorMinStake: z.bigint(),
+    validatorMinPercent: z.bigint(),
+    stakeMinimum: z.bigint(),
+    onlineDelay: z.bigint(),
+    stakeDelay: z.bigint(),
+    unstakeDelay: z.bigint(),
+  }),
   treasuryInitBalance: z.bigint(),
-  contractSources: z.object({
+  repo: z.object({
     owner: z.string(),
     repo: z.string(),
     branch: z.string(),
@@ -20,12 +32,22 @@ const InitConfig = z.object({
   }),
 });
 
-type InitConfig = z.infer<typeof InitConfig>;
+export type InitConfig = z.infer<typeof InitConfig>;
 
 export const DEFAULT_INIT_CONF: InitConfig = {
-  validators: { count: 3n, balance: 3100000000000000000000000000n },
+  globalUnstakeDelay: 0n,
+  validators: {
+    count: 3n,
+    balance: 3100000000000000000000000000n,
+    validatorMinStake: BigInt(toAettos(1_000_000)),
+    validatorMinPercent: 33n,
+    stakeMinimum: BigInt(toAettos("1")),
+    onlineDelay: 0n,
+    stakeDelay: 0n,
+    unstakeDelay: 0n,
+  },
   treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
-  contractSources: {
+  repo: {
     owner: "aeternity",
     repo: "aeternity",
     branch: "master",
@@ -39,7 +61,7 @@ export const DEFAULT_INIT_CONF: InitConfig = {
 
 export async function initDir(dir: string) {
   ensureDir(dir);
-  const initFile = path.join(dir, "init.yaml");
+  const initFile = initFilePath(dir);
   if (!fs.existsSync(initFile)) {
     const encoded = yaml.dump(DEFAULT_INIT_CONF, { schema: SCHEMA_BIGINT });
     console.log(`Creating ${initFile}`);
