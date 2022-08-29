@@ -18,6 +18,7 @@
   "author": "Aeternity Crypto Foundation",
   "license": "MIT",
   "devDependencies": {
+    "@types/json-bigint": "^1.0.1",
     "@types/node": "^18.7.3",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
@@ -41,11 +42,12 @@
     "axios": "^0.27.2",
     "bip39": "^3.0.4",
     "chalk": "^5.0.1",
+    "commander": "^9.4.0",
     "figlet": "^1.5.2",
     "js-yaml": "^4.1.0",
+    "json-bigint": "^1.0.0",
     "octokit": "^2.0.7",
     "unique-names-generator": "^4.7.1",
-    "yargs": "^17.5.1",
     "zod": "^3.18.0"
   }
 }
