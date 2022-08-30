@@ -15,7 +15,7 @@ const JSONbigConfigured = JSONbig({
 });
 
 export const toJSON = (s: any) => {
-  return JSONbigConfigured.stringify(s);
+  return JSONbigConfigured.stringify(s, null, 2);
 };
 
 export const fromJSON = (s: string) => {
