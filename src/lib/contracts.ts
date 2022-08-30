@@ -8,7 +8,7 @@ import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
 import { ensureDir } from "./utils.js";
 import fs from "fs";
-import { InitConfig, loadInitConf } from "./init";
+import { InitConfig, loadInitConf } from "./init.js";
 import { writeYamlFile } from "./yamlExtend.js";
 
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";

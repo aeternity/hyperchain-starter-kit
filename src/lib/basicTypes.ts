@@ -17,11 +17,12 @@ export const ContractAddr = z.custom<`ct_${string}`>(
 );
 type ContractAddr = z.infer<typeof ContractAddr>;
 
-export interface AccountWithSecrets {
-  mnemonic: string;
-  privKey: string;
-  addr: AccountPubKey;
-}
+export const AccountWithSecrets = z.object({
+  mnemonic: z.string(),
+  privKey: z.string(),
+  addr: AccountPubKey,
+});
+export type AccountWithSecrets = z.infer<typeof AccountWithSecrets>;
 
 export function genAccount(): AccountWithSecrets {
   const mnemonic = bip39.generateMnemonic();
