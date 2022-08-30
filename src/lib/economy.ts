@@ -1,9 +1,9 @@
 import z from "zod";
-import { AccountWithSecrets, genAccount } from "./basicTypes";
-import { genValidators, Validator } from "./validators";
-import { loadInitConf } from "./init";
+import { AccountWithSecrets, genAccount } from "./basicTypes.js";
+import { genValidators, Validator } from "./validators.js";
+import { loadInitConf } from "./init.js";
 import path from "path";
-import { writeYamlFile } from "./yamlExtend";
+import { writeYamlFile } from "./yamlExtend.js";
 
 export const Economy = z.object({
   treasury: z.object({

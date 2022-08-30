@@ -6,7 +6,7 @@ import { COMPILER_URL } from "./compiler.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
-import { ensureDir } from "./utils.js";
+import { ensureDir, toJSON } from "./utils.js";
 import fs from "fs";
 import { InitConfig, loadInitConf } from "./init.js";
 import { writeYamlFile } from "./yamlExtend.js";
@@ -27,6 +27,9 @@ export const contractsDirPath = (dir: string) => path.join(dir, "contracts");
 export const mkContractSourcePath = (dir: string, name: ContractName) => {
   return path.join(contractsDirPath(dir), mkContractFile(name));
 };
+
+export const mkContractACIPath = (dir: string, name: ContractName) =>
+  path.join(contractsDirPath(dir), `${name}.aci.json`);
 
 export const mkContractMetaPath = (dir: string, name: ContractName) =>
   path.join(contractsDirPath(dir), `${name}.meta.yaml`);
@@ -55,6 +58,7 @@ export const ContractDef = z.object({
   init: ContractInit,
   meta: ContractMeta,
   source: z.string(),
+  aci: z.string(),
 });
 export type ContractDef = z.infer<typeof ContractDef>;
 
@@ -92,16 +96,15 @@ export async function genContractDef(
     options: {},
   });
   const sdkACI = await compiler.generateACI({ code: source, options: {} });
-  const encoder = new aecalldata.Encoder([
-    ...(sdkACI.externalEncodedAci || []),
-    sdkACI.encodedAci,
-  ]);
+  const aci = [...(sdkACI.externalEncodedAci || []), sdkACI.encodedAci];
+  const encoder = new aecalldata.Encoder(aci);
   const contractName = (sdkACI.encodedAci as any).contract.name;
   const initCallDataEnc = encoder.encode(contractName, "init", initCallData);
   // console.log("call data", initCallData);
   // console.log("compiledContract", compiledContract.bytecode);
   return {
     source,
+    aci: toJSON(aci),
     init: {
       abi_version: 3,
       vm_version: 8,
@@ -153,6 +156,8 @@ export function writeContracts(dir: string, contracts: ContractDef[]) {
     writeYamlFile(metaFile, c.meta);
     const initFile = mkContractInitPath(dir, c.meta.name);
     writeYamlFile(initFile, c.init);
+    const aciFile = mkContractACIPath(dir, c.meta.name);
+    fs.writeFileSync(aciFile, c.aci);
   });
 }
 

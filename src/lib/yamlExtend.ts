@@ -41,7 +41,12 @@ export function loadYamlFile(filePath: string) {
   return yaml.load(contents, { schema: SCHEMA_BIGINT });
 }
 export function writeYamlFile(filePath: string, obj: object) {
-  const encoded = yaml.dump(obj, { schema: SCHEMA_BIGINT });
+  const encoded = yaml.dump(obj, {
+    schema: SCHEMA_BIGINT,
+    sortKeys: true,
+    condenseFlow: true,
+    forceQuotes: true,
+  });
   console.log(`Writing yaml file ${filePath}`);
   writeFileSync(filePath, encoded);
 }

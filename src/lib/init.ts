@@ -67,7 +67,7 @@ export async function initDir(dir: string) {
   const initFile = initFilePath(dir);
   if (!fs.existsSync(initFile)) {
     writeYamlFile(initFile, DEFAULT_INIT_CONF);
-    fs.writeFileSync(path.join(dir, ".gitignore"), "unencrypted-secrets.yaml");
+    fs.writeFileSync(path.join(dir, ".gitignore"), "economy-unencrypted.yaml");
   } else {
     console.error(`File ${initFile} already exists. Aborting.`);
   }
