@@ -5,7 +5,7 @@ import axios from "axios";
 import aecalldata from "@aeternity/aepp-calldata";
 import { program } from "commander";
 import { initDir } from "./lib/init.js";
-import { generateEconomy } from "./lib/generateEconomy.js";
+import { retrieveContracts } from "./lib/contracts";
 
 const STAKING_VALIDATOR_SOURCE_URL =
   "https://raw.githubusercontent.com/aeternity/aeternity/master/test/contracts/StakingValidator.aes";
@@ -22,10 +22,7 @@ async function main() {
     .command("init <directory>")
     .description("Initialize a directory as a hyperchain config")
     .action(initDir);
-  prg
-    .command("generate-economy <directory>")
-    .description("Generate contracts, treasury and validators")
-    .action(generateEconomy);
+  prg.command("retrieve-contracts <directory>").action(retrieveContracts);
   prg.parse(process.argv);
   // console.log("prg", prg);
 }

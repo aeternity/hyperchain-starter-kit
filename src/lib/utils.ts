@@ -1,6 +1,5 @@
 import fs from "fs";
 import JSONbig from "json-bigint";
-import path from "path";
 
 export function ensureDir(dir: string) {
   if (!fs.existsSync(dir)) {
@@ -22,6 +21,3 @@ export const toJSON = (s: any) => {
 export const fromJSON = (s: string) => {
   return JSONbigConfigured.parse(s);
 };
-
-export const initFilePath = (dir: string) => path.join(dir, "init.yaml");
-export const contractsDirPath = (dir: string) => path.join(dir, "contracts");

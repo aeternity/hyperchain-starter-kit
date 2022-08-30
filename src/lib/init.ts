@@ -2,9 +2,10 @@ import z from "zod";
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
-import { ensureDir, initFilePath } from "./utils.js";
-import { SCHEMA_BIGINT } from "./yamlExtend.js";
+import { ensureDir } from "./utils.js";
+import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import aesdk from "@aeternity/aepp-sdk";
+
 const { toAettos } = aesdk;
 
 export const InitConfig = z.object({
@@ -59,15 +60,20 @@ export const DEFAULT_INIT_CONF: InitConfig = {
   },
 };
 
+export const initFilePath = (dir: string) => path.join(dir, "init.yaml");
+
 export async function initDir(dir: string) {
   ensureDir(dir);
   const initFile = initFilePath(dir);
   if (!fs.existsSync(initFile)) {
-    const encoded = yaml.dump(DEFAULT_INIT_CONF, { schema: SCHEMA_BIGINT });
-    console.log(`Creating ${initFile}`);
-    fs.writeFileSync(initFile, encoded);
+    writeYamlFile(initFile, DEFAULT_INIT_CONF);
     fs.writeFileSync(path.join(dir, ".gitignore"), "unencrypted-secrets.yaml");
   } else {
     console.error(`File ${initFile} already exists. Aborting.`);
   }
+}
+
+export function loadInitConf(dir: string): InitConfig {
+  const initFile = initFilePath(dir);
+  return InitConfig.parse(loadYamlFile(initFile));
 }

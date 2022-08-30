@@ -1,4 +1,5 @@
 import yaml from "js-yaml";
+import { readFileSync, writeFileSync } from "fs";
 
 let options = Object.assign({}, (yaml as any).types.int.options);
 
@@ -31,6 +32,16 @@ options.predicate = (object: object) => {
 
 let BigIntType = new yaml.Type("tag:yaml.org,2002:int", options);
 
-export const SCHEMA_BIGINT = yaml.DEFAULT_SCHEMA.extend({
+const SCHEMA_BIGINT = yaml.DEFAULT_SCHEMA.extend({
   implicit: [BigIntType],
 });
+
+export function loadYamlFile(filePath: string) {
+  const contents = readFileSync(filePath, { encoding: "utf8", flag: "r" });
+  return yaml.load(contents, { schema: SCHEMA_BIGINT });
+}
+export function writeYamlFile(filePath: string, obj: object) {
+  const encoded = yaml.dump(obj, { schema: SCHEMA_BIGINT });
+  console.log(`Writing yaml file ${filePath}`);
+  writeFileSync(filePath, encoded);
+}

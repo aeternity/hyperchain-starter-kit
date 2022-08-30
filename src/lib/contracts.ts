@@ -6,11 +6,10 @@ import { COMPILER_URL } from "./compiler.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
-import { contractsDirPath, ensureDir } from "./utils.js";
+import { ensureDir } from "./utils.js";
 import fs from "fs";
-import yaml from "js-yaml";
-import { SCHEMA_BIGINT } from "./yamlExtend.js";
-import { InitConfig } from "./init";
+import { InitConfig, loadInitConf } from "./init";
+import { writeYamlFile } from "./yamlExtend.js";
 
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";
 
@@ -23,9 +22,12 @@ export type ContractFile = `${ContractName}.aes`;
 export const mkContractFile = (name: ContractName): ContractFile =>
   `${name}.aes`;
 
+export const contractsDirPath = (dir: string) => path.join(dir, "contracts");
+
 export const mkContractSourcePath = (dir: string, name: ContractName) => {
   return path.join(contractsDirPath(dir), mkContractFile(name));
 };
+
 export const mkContractMetaPath = (dir: string, name: ContractName) =>
   path.join(contractsDirPath(dir), `${name}.meta.yaml`);
 
@@ -74,7 +76,7 @@ export const ContractsFile = z.object({
   calls: z.array(ContractCallDef),
 });
 
-export async function retrieveContractDef(
+export async function genContractDef(
   repo: GitRepo,
   contract: ContractName,
   nonce: number,
@@ -120,16 +122,14 @@ export async function retrieveContractDef(
 export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
   const stakingValidatorContrAddr = aesdk.encodeContractAddress(OWNER_ADDR, 1);
   console.log("stakingValidatorContrAddr", stakingValidatorContrAddr);
-  const svContract = await retrieveContractDef(
-    init.repo,
-    "StakingValidator",
-    1,
-    [OWNER_ADDR, init.globalUnstakeDelay]
-  );
+  const svContract = await genContractDef(init.repo, "StakingValidator", 1, [
+    OWNER_ADDR,
+    init.globalUnstakeDelay,
+  ]);
   // console.log(svContract);
   const mainStakingContrAddr = aesdk.encodeContractAddress(OWNER_ADDR, 2);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
-  const msContract = await retrieveContractDef(init.repo, "MainStaking", 2, [
+  const msContract = await genContractDef(init.repo, "MainStaking", 2, [
     stakingValidatorContrAddr,
     // "entropy_string",
     init.validators.validatorMinStake,
@@ -150,8 +150,15 @@ export function writeContracts(dir: string, contracts: ContractDef[]) {
     const sourceFile = mkContractSourcePath(dir, c.meta.name);
     fs.writeFileSync(sourceFile, c.source);
     const metaFile = mkContractMetaPath(dir, c.meta.name);
-    fs.writeFileSync(metaFile, yaml.dump(c.meta, { schema: SCHEMA_BIGINT }));
+    writeYamlFile(metaFile, c.meta);
     const initFile = mkContractInitPath(dir, c.meta.name);
-    fs.writeFileSync(initFile, yaml.dump(c.init, { schema: SCHEMA_BIGINT }));
+    writeYamlFile(initFile, c.init);
   });
+}
+
+export async function retrieveContracts(dir: string) {
+  const init = loadInitConf(dir);
+  console.log("init conf from file", init);
+  const contracts = await getContracts(init);
+  writeContracts(dir, contracts);
 }
