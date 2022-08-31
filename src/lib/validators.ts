@@ -5,6 +5,15 @@ import {
   animals,
   uniqueNamesGenerator,
 } from "unique-names-generator";
+import {
+  ContractCall,
+  ContractDef,
+  ContractName,
+  mkContractCall,
+} from "./contracts.js";
+import { InitConfig } from "./init.js";
+// @ts-ignore
+import aecalldata from "@aeternity/aepp-calldata";
 
 const genValidatorName = ({ seed }: { seed?: number | string }) =>
   uniqueNamesGenerator({
@@ -18,7 +27,7 @@ const genValidatorName = ({ seed }: { seed?: number | string }) =>
 export const Validator = z.object({
   name: z.string(),
   description: z.union([z.string(), z.null()]),
-  image_url: z.union([z.string(), z.null()]),
+  avatar_url: z.union([z.string(), z.null()]),
   account: AccountWithSecrets,
   initialBalance: z.bigint(),
 });
@@ -34,7 +43,7 @@ function genValidator({
   return {
     name: genValidatorName({ seed: nameSeed }),
     description: null,
-    image_url: null,
+    avatar_url: null,
     account: genAccount(),
     initialBalance,
   };
@@ -44,3 +53,67 @@ export const genValidators = (count: bigint, initialBalance: bigint) =>
   Array.from({ length: Number(count) }).map((x, n) =>
     genValidator({ nameSeed: n + 1 + 123456, initialBalance })
   );
+
+export function mkValidatorCalls(
+  v: Validator,
+  contract: ContractDef,
+  encoder: aecalldata.Encoder,
+  conf: InitConfig
+): ContractCall[] {
+  const ct_name: ContractName = "MainStaking";
+  const contract_pubkey = contract.init.pubkey;
+  const caller = v.account.addr;
+  const common = { caller, contract_pubkey, amount: 0n };
+  const newValidatorData = encoder.encode(ct_name, "new_validator", []);
+  console.log("newValidatorData", newValidatorData);
+  const nvCall = mkContractCall({
+    ...common,
+    call_data: newValidatorData,
+    nonce: 1n,
+    amount: conf.validators.validatorMinStake,
+  });
+
+  const setOnlineData = encoder.encode(ct_name, "set_online", []);
+  console.log("onlineCallData", setOnlineData);
+  const onlineCall = mkContractCall({
+    ...common,
+    call_data: setOnlineData,
+    nonce: 2n,
+  });
+
+  const setNameData = encoder.encode(ct_name, "set_validator_name", [v.name]);
+  console.log("setNameData", setNameData);
+  const setNameCall = mkContractCall({
+    ...common,
+    call_data: setNameData,
+    nonce: 3n,
+  });
+
+  const calls = [nvCall, onlineCall, setNameCall];
+
+  if (v.description) {
+    const setDescData = encoder.encode(ct_name, "set_validator_description", [
+      v.description,
+    ]);
+    console.log("setDescriptionData", setDescData);
+    calls.push(
+      mkContractCall({
+        ...common,
+        call_data: setDescData,
+        nonce: 3n,
+      })
+    );
+  }
+
+  if (v.avatar_url) {
+    const setAvatarData = encoder.encode(ct_name, "set_validator_avatar_url", [
+      v.avatar_url,
+    ]);
+    console.log("setAvatarUrlData", setAvatarData);
+    calls.push(
+      mkContractCall({ ...common, call_data: setAvatarData, nonce: 4n })
+    );
+  }
+
+  return calls;
+}
