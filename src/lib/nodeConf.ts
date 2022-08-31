@@ -6,7 +6,7 @@ import {
   ContractsFile,
   loadContract,
 } from "./contracts.js";
-import { mkValidatorCalls } from "./validators.js";
+import { mkBRIValidatorCalls, mkValidatorCalls } from "./validators.js";
 import { Economy, mkEconomyPath } from "./economy.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
@@ -25,6 +25,9 @@ const mkContractsJsonPath = (dir: string, conf: InitConfig) =>
 const writeAccountsJson = (dir: string, economy: Economy, conf: InitConfig) => {
   const accounts: Record<string, bigint> = {};
   accounts[economy.treasury.account.addr] = economy.treasury.initialBalance;
+  if (economy.aeBRIAccount) {
+    accounts[economy.aeBRIAccount.pubKey] = economy.aeBRIAccount.initialBalance;
+  }
   economy.validators.forEach(
     (v) => (accounts[v.account.addr] = v.initialBalance)
   );
@@ -44,6 +47,12 @@ export function genNodeConfig(dir: string) {
   economy.validators.forEach((v) => {
     calls = [...calls, ...mkValidatorCalls(v, ms, encoder, conf)];
   });
+  if (economy.aeBRIAccount) {
+    calls = [
+      ...calls,
+      ...mkBRIValidatorCalls(economy.aeBRIAccount, ms, encoder, conf),
+    ];
+  }
   const contractsFile: ContractsFile = {
     contracts: [sv.init, ms.init, hce.init],
     calls,

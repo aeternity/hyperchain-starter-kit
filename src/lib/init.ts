@@ -5,6 +5,7 @@ import yaml from "js-yaml";
 import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import aesdk from "@aeternity/aepp-sdk";
+import { AccountPubKey } from "./basicTypes.js";
 
 const { toAettos } = aesdk;
 
@@ -12,7 +13,7 @@ export const InitConfig = z.object({
   networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
   treasuryInitBalance: z.bigint(),
-  briAccount: z.string(),
+  aeBRIAccount: AccountPubKey,
   validators: z.object({
     count: z.bigint(),
     balance: z.bigint(),
@@ -41,7 +42,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
     globalUnstakeDelay: 0n,
-    briAccount: "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8",
+    aeBRIAccount: "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8",
     validators: {
       count: 3n,
       balance: 3100000000000000000000000000n,

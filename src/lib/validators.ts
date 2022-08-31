@@ -14,6 +14,7 @@ import {
 import { InitConfig } from "./init.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
+import { AeBriAccount } from "./economy";
 
 const genValidatorName = ({ seed }: { seed?: number | string }) =>
   uniqueNamesGenerator({
@@ -116,4 +117,48 @@ export function mkValidatorCalls(
   }
 
   return calls;
+}
+
+export function mkBRIValidatorCalls(
+  bri: AeBriAccount,
+  contract: ContractDef,
+  encoder: aecalldata.Encoder,
+  conf: InitConfig
+): ContractCall[] {
+  const ct_name: ContractName = "MainStaking";
+  const contract_pubkey = contract.init.pubkey;
+  const common = { caller: bri.pubKey, contract_pubkey, amount: 0n };
+  const newValidatorData = encoder.encode(ct_name, "new_validator", []);
+  console.log("newValidatorData", newValidatorData);
+  const nvCall = mkContractCall({
+    ...common,
+    call_data: newValidatorData,
+    nonce: 1n,
+    amount: conf.validators.validatorMinStake,
+  });
+
+  const setOfflineData = encoder.encode(ct_name, "set_offline", []);
+  const onlineCall = mkContractCall({
+    ...common,
+    call_data: setOfflineData,
+    nonce: 2n,
+  });
+
+  const setNameData = encoder.encode(ct_name, "set_validator_name", [bri.name]);
+  const setNameCall = mkContractCall({
+    ...common,
+    call_data: setNameData,
+    nonce: 3n,
+  });
+  const setAvatarData = encoder.encode(ct_name, "set_validator_avatar_url", [
+    bri.avatar_url,
+  ]);
+  console.log("setAvatarUrlData", setAvatarData);
+
+  const setAvatarCall = mkContractCall({
+    ...common,
+    call_data: setAvatarData,
+    nonce: 4n,
+  });
+  return [nvCall, onlineCall, setNameCall, setAvatarCall];
 }
