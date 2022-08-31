@@ -5,17 +5,17 @@ import aesdk from "@aeternity/aepp-sdk";
 export const ContractDataEnc = z.custom<`cb_${string}`>(
   (v) => typeof v === "string" && v.startsWith("cb_")
 );
+export type ContractDataEnc = z.infer<typeof ContractDataEnc>;
 
-type ContractDataEnc = z.infer<typeof ContractDataEnc>;
 export const AccountPubKey = z.custom<`ak_${string}`>(
   (v) => typeof v === "string" && v.startsWith("ak_")
 );
-type AccountPubKey = z.infer<typeof AccountPubKey>;
+export type AccountPubKey = z.infer<typeof AccountPubKey>;
 
 export const ContractAddr = z.custom<`ct_${string}`>(
   (v) => typeof v === "string" && v.startsWith("ct_")
 );
-type ContractAddr = z.infer<typeof ContractAddr>;
+export type ContractAddr = z.infer<typeof ContractAddr>;
 
 export const AccountWithSecrets = z.object({
   mnemonic: z.string(),

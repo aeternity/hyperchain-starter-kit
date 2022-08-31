@@ -9,6 +9,7 @@ import aesdk from "@aeternity/aepp-sdk";
 const { toAettos } = aesdk;
 
 export const InitConfig = z.object({
+  networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
   validators: z.object({
     count: z.bigint(),
@@ -35,38 +36,42 @@ export const InitConfig = z.object({
 
 export type InitConfig = z.infer<typeof InitConfig>;
 
-export const DEFAULT_INIT_CONF: InitConfig = {
-  globalUnstakeDelay: 0n,
-  validators: {
-    count: 3n,
-    balance: 3100000000000000000000000000n,
-    validatorMinStake: BigInt(toAettos(1_000_000)),
-    validatorMinPercent: 33n,
-    stakeMinimum: BigInt(toAettos("1")),
-    onlineDelay: 0n,
-    stakeDelay: 0n,
-    unstakeDelay: 0n,
-  },
-  treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
-  repo: {
-    owner: "aeternity",
-    repo: "aeternity",
-    branch: "master",
-    ref: "HEAD",
-  },
-  docker: {
-    image: "aeternity/aeternity",
-    tag: "latest",
-  },
+export const defaultInitConf = (networkId: string): InitConfig => {
+  return {
+    networkId,
+    globalUnstakeDelay: 0n,
+    validators: {
+      count: 3n,
+      balance: 3100000000000000000000000000n,
+      validatorMinStake: BigInt(toAettos(1_000_000)),
+      validatorMinPercent: 33n,
+      stakeMinimum: BigInt(toAettos("1")),
+      onlineDelay: 0n,
+      stakeDelay: 0n,
+      unstakeDelay: 0n,
+    },
+    treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
+    repo: {
+      owner: "aeternity",
+      repo: "aeternity",
+      branch: "master",
+      ref: "HEAD",
+    },
+    docker: {
+      image: "aeternity/aeternity",
+      tag: "latest",
+    },
+  };
 };
 
 export const initFilePath = (dir: string) => path.join(dir, "init.yaml");
 
 export async function initDir(dir: string) {
+  const networkId = path.basename(dir);
   ensureDir(dir);
   const initFile = initFilePath(dir);
   if (!fs.existsSync(initFile)) {
-    writeYamlFile(initFile, DEFAULT_INIT_CONF);
+    writeYamlFile(initFile, defaultInitConf(networkId));
     fs.writeFileSync(path.join(dir, ".gitignore"), "economy-unencrypted.yaml");
   } else {
     console.error(`File ${initFile} already exists. Aborting.`);

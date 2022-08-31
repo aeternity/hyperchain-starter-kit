@@ -21,3 +21,8 @@ export const toJSON = (s: any) => {
 export const fromJSON = (s: string) => {
   return JSONbigConfigured.parse(s);
 };
+
+export const readFile = (path: string) =>
+  fs.readFileSync(path, { encoding: "utf8", flag: "r" });
+
+export const loadJsonFile = (path: string) => fromJSON(readFile(path));

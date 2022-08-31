@@ -6,10 +6,10 @@ import { COMPILER_URL } from "./compiler.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
-import { ensureDir, toJSON } from "./utils.js";
+import { ensureDir, loadJsonFile, readFile, toJSON } from "./utils.js";
 import fs from "fs";
 import { InitConfig, loadInitConf } from "./init.js";
-import { writeYamlFile } from "./yamlExtend.js";
+import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";
 
@@ -38,16 +38,29 @@ export const mkContractInitPath = (dir: string, name: ContractName) =>
   path.join(contractsDirPath(dir), `${name}.init.yaml`);
 
 export const ContractInit = z.object({
-  abi_version: z.literal(3),
-  vm_version: z.literal(8),
-  amount: z.literal(0),
-  nonce: z.number(),
+  abi_version: z.literal(3n),
+  vm_version: z.literal(8n),
+  amount: z.literal(0n),
+  nonce: z.bigint(),
   call_data: ContractDataEnc,
   code: ContractDataEnc,
   owner_pubkey: AccountPubKey,
   pubkey: ContractAddr,
 });
 export type ContractInitDef = z.infer<typeof ContractInit>;
+
+export const ContractCall = z.object({
+  abi_version: z.literal(3n),
+  amount: z.bigint(),
+  call_data: ContractDataEnc,
+  caller: AccountPubKey,
+  contract_pubkey: ContractAddr,
+  nonce: z.bigint(),
+  fee: z.literal(1000000000000000n),
+  gas: z.literal(1000000n),
+  gas_price: z.literal(1000000000n),
+});
+export type ContractCall = z.infer<typeof ContractCall>;
 
 export const ContractMeta = z.object({
   git: GitRepo,
@@ -62,23 +75,11 @@ export const ContractDef = z.object({
 });
 export type ContractDef = z.infer<typeof ContractDef>;
 
-export const ContractCallDef = z.object({
-  abi_version: z.literal(3),
-  nonce: z.number(),
-  amount: z.bigint(),
-  call_data: ContractDataEnc,
-  caller: AccountPubKey,
-  contract_pubkey: ContractAddr,
-  fee: z.literal(1000000000000000),
-  gas: z.literal(1000000),
-  gas_price: z.literal(1000000000),
-});
-export type ContractCallDef = z.infer<typeof ContractCallDef>;
-
 export const ContractsFile = z.object({
   contracts: z.array(ContractInit),
-  calls: z.array(ContractCallDef),
+  calls: z.array(ContractCall),
 });
+export type ContractsFile = z.infer<typeof ContractsFile>;
 
 export async function genContractDef(
   repo: GitRepo,
@@ -106,10 +107,10 @@ export async function genContractDef(
     source,
     aci: toJSON(aci),
     init: {
-      abi_version: 3,
-      vm_version: 8,
-      amount: 0,
-      nonce,
+      abi_version: 3n,
+      vm_version: 8n,
+      amount: 0n,
+      nonce: BigInt(nonce),
       code: ContractDataEnc.parse(compiledContract.bytecode),
       call_data: ContractDataEnc.parse(initCallDataEnc),
       owner_pubkey: OWNER_ADDR,
@@ -167,3 +168,41 @@ export async function retrieveContracts(dir: string) {
   const contracts = await getContracts(init);
   writeContracts(dir, contracts);
 }
+
+export function loadContract(dir: string, name: ContractName): ContractDef {
+  const aci = loadJsonFile(mkContractACIPath(dir, name));
+  const source = readFile(mkContractACIPath(dir, name));
+  const init = ContractInit.parse(loadYamlFile(mkContractInitPath(dir, name)));
+  const meta = ContractMeta.parse(loadYamlFile(mkContractMetaPath(dir, name)));
+  return {
+    init,
+    meta,
+    source,
+    aci,
+  };
+}
+
+type ContractCallArgs = {
+  amount: bigint;
+  call_data: ContractDataEnc;
+  caller: AccountPubKey;
+  contract_pubkey: ContractAddr;
+  nonce: bigint;
+};
+export const mkContractCall = ({
+  amount,
+  call_data,
+  caller,
+  nonce,
+  contract_pubkey,
+}: ContractCallArgs): ContractCall => ({
+  abi_version: 3n,
+  amount,
+  call_data,
+  caller,
+  contract_pubkey,
+  nonce,
+  fee: 1000000000000000n,
+  gas: 1000000n,
+  gas_price: 1000000000n,
+});

@@ -7,11 +7,7 @@ import { program } from "commander";
 import { initDir } from "./lib/init.js";
 import { retrieveContracts } from "./lib/contracts.js";
 import { genEconomy } from "./lib/economy.js";
-
-const STAKING_VALIDATOR_SOURCE_URL =
-  "https://raw.githubusercontent.com/aeternity/aeternity/master/test/contracts/StakingValidator.aes";
-const MAIN_STAKING_SOURCE_URL =
-  "https://raw.githubusercontent.com/aeternity/aeternity/master/test/contracts/MainStaking.aes";
+import { genNodeConfig } from "./lib/nodeConf.js";
 
 async function fetchContractSource(url: string): Promise<string> {
   return (await axios.get(url)).data.trim().toString();
@@ -25,6 +21,7 @@ async function main() {
     .action(initDir);
   prg.command("retrieve-contracts <directory>").action(retrieveContracts);
   prg.command("gen-economy <directory>").action(genEconomy);
+  prg.command("gen-node-conf <directory>").action(genNodeConfig);
   prg.parse(process.argv);
   // console.log("prg", prg);
 }
