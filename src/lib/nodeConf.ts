@@ -38,11 +38,15 @@ export function genNodeConfig(dir: string) {
   writeAccountsJson(dir, economy, conf);
   const ms = loadContract(dir, "MainStaking");
   const sv = loadContract(dir, "StakingValidator");
+  const hce = loadContract(dir, "HCElection");
   const encoder = new aecalldata.Encoder(ms.aci);
   let calls: ContractCall[] = [];
   economy.validators.forEach((v) => {
     calls = [...calls, ...mkValidatorCalls(v, ms, encoder, conf)];
   });
-  const contractsFile: ContractsFile = { contracts: [sv.init, ms.init], calls };
+  const contractsFile: ContractsFile = {
+    contracts: [sv.init, ms.init, hce.init],
+    calls,
+  };
   fs.writeFileSync(mkContractsJsonPath(dir, conf), toJSON(contractsFile));
 }

@@ -12,10 +12,12 @@ import { InitConfig, loadInitConf } from "./init.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";
+export const HC_ENTROPY_STRING = "HC_ENTROPY";
 
 export const ContractName = z.union([
   z.literal("MainStaking"),
   z.literal("StakingValidator"),
+  z.literal("HCElection"),
 ]);
 export type ContractName = z.infer<typeof ContractName>;
 export type ContractFile = `${ContractName}.aes`;
@@ -144,7 +146,13 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
     init.validators.unstakeDelay,
   ]);
   // console.log(msContract);
-  return [svContract, msContract];
+  const hcElectionContrAddr = aesdk.encodeContractAddress(OWNER_ADDR, 3);
+  console.log("hcElectionContrAddr", hcElectionContrAddr);
+  const hcElectionContract = await genContractDef(init.repo, "HCElection", 3, [
+    mainStakingContrAddr,
+    HC_ENTROPY_STRING,
+  ]);
+  return [svContract, msContract, hcElectionContract];
 }
 
 export function writeContracts(dir: string, contracts: ContractDef[]) {
