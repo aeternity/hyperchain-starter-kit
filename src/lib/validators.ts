@@ -137,18 +137,11 @@ export function mkBRIValidatorCalls(
     amount: conf.validators.validatorMinStake,
   });
 
-  const setOfflineData = encoder.encode(ct_name, "set_offline", []);
-  const onlineCall = mkContractCall({
-    ...common,
-    call_data: setOfflineData,
-    nonce: 2n,
-  });
-
   const setNameData = encoder.encode(ct_name, "set_validator_name", [bri.name]);
   const setNameCall = mkContractCall({
     ...common,
     call_data: setNameData,
-    nonce: 3n,
+    nonce: 2n,
   });
   const setAvatarData = encoder.encode(ct_name, "set_validator_avatar_url", [
     bri.avatar_url,
@@ -158,7 +151,7 @@ export function mkBRIValidatorCalls(
   const setAvatarCall = mkContractCall({
     ...common,
     call_data: setAvatarData,
-    nonce: 4n,
+    nonce: 3n,
   });
-  return [nvCall, onlineCall, setNameCall, setAvatarCall];
+  return [nvCall, setNameCall, setAvatarCall];
 }
