@@ -22,6 +22,7 @@ export const Economy = z.object({
   }),
   aeBRIAccount: z.optional(AeBriAccount),
   validators: z.array(Validator),
+  faucet: z.object({ initialBalance: z.bigint(), account: AccountWithSecrets }),
 });
 export type Economy = z.infer<typeof Economy>;
 
@@ -49,6 +50,7 @@ export async function genEconomy(dir: string) {
     treasury,
     validators,
     aeBRIAccount: mkDefaultBri(conf),
+    faucet: { initialBalance: conf.validators.balance, account: genAccount() },
   };
   const filePath = mkEconomyPath(dir);
   writeYamlFile(filePath, economy);

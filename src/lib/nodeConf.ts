@@ -25,6 +25,7 @@ const mkContractsJsonPath = (dir: string, conf: InitConfig) =>
 const writeAccountsJson = (dir: string, economy: Economy, conf: InitConfig) => {
   const accounts: Record<string, bigint> = {};
   accounts[economy.treasury.account.addr] = economy.treasury.initialBalance;
+  accounts[economy.faucet.account.addr] = economy.faucet.initialBalance;
   if (economy.aeBRIAccount) {
     accounts[economy.aeBRIAccount.pubKey] = economy.aeBRIAccount.initialBalance;
   }
