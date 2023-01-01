@@ -5,6 +5,7 @@
     "target": "esnext",
     "sourceMap": true,
     "outDir": "dist",
+    "declaration": true,
     "lib": ["ESNext", "dom"],
     "allowJs": true,
     "checkJs": true,
