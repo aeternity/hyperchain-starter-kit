@@ -1,13 +1,11 @@
 import z from "zod";
 import fs from "fs";
 import path from "path";
-import yaml from "js-yaml";
 import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
-import aesdk from "@aeternity/aepp-sdk";
 import { AccountPubKey } from "./basicTypes.js";
+import {toAettos} from "@aeternity/aepp-sdk";
 
-const { toAettos } = aesdk;
 
 export const InitConfig = z.object({
   networkId: z.string(),

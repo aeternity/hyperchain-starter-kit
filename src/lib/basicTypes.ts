@@ -1,6 +1,7 @@
 import z from "zod";
-import bip39 from "bip39";
-import aesdk from "@aeternity/aepp-sdk";
+import {getHdWalletAccountFromSeed} from "@aeternity/aepp-sdk";
+import {generateMnemonic, mnemonicToSeedSync} from "@scure/bip39"
+import { wordlist } from "@scure/bip39/wordlists/english.js";
 
 export const ContractDataEnc = z.custom<`cb_${string}`>(
   (v) => typeof v === "string" && v.startsWith("cb_")
@@ -25,9 +26,9 @@ export const AccountWithSecrets = z.object({
 export type AccountWithSecrets = z.infer<typeof AccountWithSecrets>;
 
 export function genAccount(): AccountWithSecrets {
-  const mnemonic = bip39.generateMnemonic();
-  const secret = bip39.mnemonicToSeedSync(mnemonic);
-  const acc = aesdk.getHdWalletAccountFromSeed(secret, 0);
+  const mnemonic = generateMnemonic(wordlist);
+  const secretKey = mnemonicToSeedSync(mnemonic);
+  const acc = getHdWalletAccountFromSeed(secretKey, 0);
   return {
     mnemonic,
     privKey: acc.secretKey,

@@ -3,7 +3,6 @@ import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import { ContractCall, ContractsFile, loadContract } from "./contracts.js";
 import { mkBRIValidatorCalls, mkValidatorCalls } from "./validators.js";
 import { Economy, mkEconomyPath } from "./economy.js";
-// @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
 import fs from "fs";
@@ -43,7 +42,7 @@ export async function genNodeConfig(dir: string) {
   const mainStaking = loadContract(dir, "MainStaking");
   const stakingValidator = loadContract(dir, "StakingValidator");
   const hcElection = loadContract(dir, "HCElection");
-  const encoder = new aecalldata.Encoder(mainStaking.aci);
+  const encoder = new aecalldata.AciContractCallEncoder(mainStaking.aci);
   let calls: ContractCall[] = [];
   economy.validators.forEach((v) => {
     calls = [...calls, ...mkValidatorCalls(v, mainStaking, encoder, conf)];
