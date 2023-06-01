@@ -1,6 +1,5 @@
 import z from "zod";
 import { AccountPubKey, ContractAddr, ContractDataEnc } from "./basicTypes.js";
-import { getRef, GitRepo, retrieveContractSource } from "./github.js";
 import { COMPILER_URL } from "./compiler.js";
 import path from "path";
 import { ensureDir, loadJsonFile, readFile, toJSON } from "./utils.js";
@@ -9,7 +8,9 @@ import { InitConfig, loadInitConf } from "./init.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import {encodeContractAddress, CompilerHttpNode} from "@aeternity/aepp-sdk"
 import aecalldata from "@aeternity/aepp-calldata";
+import axios from "axios";
 
+export const SOURCE_DIR = "test/contracts/"
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";
 export const HC_ENTROPY_STRING = "HC_ENTROPY";
 
@@ -64,8 +65,8 @@ export const ContractCall = z.object({
 export type ContractCall = z.infer<typeof ContractCall>;
 
 export const ContractMeta = z.object({
-  git: GitRepo,
   name: ContractName,
+  sourceURL: z.string(),
 });
 
 export const ContractDef = z.object({
@@ -83,16 +84,22 @@ export const ContractsFile = z.object({
 });
 export type ContractsFile = z.infer<typeof ContractsFile>;
 
+export const getContractSource = async (url: string) => {
+  const response = await axios.get(url);
+  return response.data
+}
+
 export async function genContractDef(
-  repo: GitRepo,
+  sourcesPrefix: string,
   contractName: ContractName,
   nonce: number,
   initCallData: any[]
 ): Promise<ContractDef> {
   const contractAddress = encodeContractAddress(OWNER_ADDR, nonce);
-  const repoWithRef = await getRef(repo);
   const contractFile: ContractFile = `${contractName}.aes`;
-  const source = await retrieveContractSource(repoWithRef, contractFile);
+  const sourceURL = `${sourcesPrefix}${SOURCE_DIR}${contractFile}`;
+  const source = await getContractSource(sourceURL);
+  // console.log('source of ', contractFile, source)
   const compiler = new CompilerHttpNode(COMPILER_URL);
   const compiled = await compiler.compileBySourceCode(source);
 
@@ -115,7 +122,7 @@ export async function genContractDef(
     },
     meta: {
       name: contractName,
-      git: repoWithRef,
+      sourceURL,
     },
   };
 }
@@ -123,14 +130,14 @@ export async function genContractDef(
 export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
   const stakingValidatorContrAddr = encodeContractAddress(OWNER_ADDR, 1);
   console.log("stakingValidatorContrAddr", stakingValidatorContrAddr);
-  const svContract = await genContractDef(init.repo, "StakingValidator", 1, [
+  const svContract = await genContractDef(init.contractSourcesPrefix, "StakingValidator", 1, [
     OWNER_ADDR,
     init.globalUnstakeDelay,
   ]);
   // console.log(svContract);
   const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 2);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
-  const msContract = await genContractDef(init.repo, "MainStaking", 2, [
+  const msContract = await genContractDef(init.contractSourcesPrefix, "MainStaking", 2, [
     stakingValidatorContrAddr,
     // "entropy_string",
     init.validators.validatorMinStake,
@@ -143,7 +150,7 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
   // console.log(msContract);
   const hcElectionContrAddr = encodeContractAddress(OWNER_ADDR, 3);
   console.log("hcElectionContrAddr", hcElectionContrAddr);
-  const hcElectionContract = await genContractDef(init.repo, "HCElection", 3, [
+  const hcElectionContract = await genContractDef(init.contractSourcesPrefix, "HCElection", 3, [
     mainStakingContrAddr,
     HC_ENTROPY_STRING,
   ]);

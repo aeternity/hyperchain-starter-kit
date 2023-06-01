@@ -26,7 +26,7 @@ export const AccountWithSecrets = z.object({
 export type AccountWithSecrets = z.infer<typeof AccountWithSecrets>;
 
 export function genAccount(): AccountWithSecrets {
-  const mnemonic = generateMnemonic(wordlist);
+  const mnemonic = generateMnemonic(wordlist, 256);
   const secretKey = mnemonicToSeedSync(mnemonic);
   const acc = getHdWalletAccountFromSeed(secretKey, 0);
   return {
