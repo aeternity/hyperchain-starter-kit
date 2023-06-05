@@ -9,7 +9,7 @@ export interface paths {
     post: operations["GenerateACI"];
   };
   "/compile": {
-    /** Compile a sophia contract from source and return byte code */
+    /** Compile a sophia contract from source and return byte code and ACI */
     post: operations["CompileContract"];
   };
   "/decode-call-result": {
@@ -99,8 +99,9 @@ export interface definitions {
   };
   /** @description Swagger API description */
   API: { [key: string]: unknown };
-  ByteCode: {
+  CompileResult: {
     bytecode: definitions["EncodedByteArray"];
+    aci: { [key: string]: unknown }[];
   };
   SophiaCallResultInput: {
     /** @description (Possibly partial) Sophia contract code/interface */
@@ -205,7 +206,7 @@ export interface operations {
       };
     };
   };
-  /** Compile a sophia contract from source and return byte code */
+  /** Compile a sophia contract from source and return byte code and ACI */
   CompileContract: {
     parameters: {
       body: {
@@ -216,7 +217,7 @@ export interface operations {
     responses: {
       /** Byte code response */
       200: {
-        schema: definitions["ByteCode"];
+        schema: definitions["CompileResult"];
       };
       /** Invalid contract */
       400: {

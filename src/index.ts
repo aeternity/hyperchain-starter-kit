@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 import axios from "axios";
-// @ts-ignore
-import aecalldata from "@aeternity/aepp-calldata";
 import { program } from "commander";
 import { initDir } from "./lib/init.js";
 import { retrieveContracts } from "./lib/contracts.js";

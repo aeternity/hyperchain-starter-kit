@@ -58,14 +58,14 @@ export const genValidators = (count: bigint, initialBalance: bigint) =>
 export function mkValidatorCalls(
   v: Validator,
   contract: ContractDef,
-  encoder: aecalldata.Encoder,
+  encoder: aecalldata.AciContractCallEncoder,
   conf: InitConfig
 ): ContractCall[] {
   const ct_name: ContractName = "MainStaking";
   const contract_pubkey = contract.init.pubkey;
   const caller = v.account.addr;
   const common = { caller, contract_pubkey, amount: 0n };
-  const newValidatorData = encoder.encode(ct_name, "new_validator", []);
+  const newValidatorData = encoder.encodeCall(ct_name, "new_validator", []);
   console.log("newValidatorData", newValidatorData);
   const nvCall = mkContractCall({
     ...common,
@@ -74,7 +74,7 @@ export function mkValidatorCalls(
     amount: conf.validators.validatorMinStake,
   });
 
-  const setOnlineData = encoder.encode(ct_name, "set_online", []);
+  const setOnlineData = encoder.encodeCall(ct_name, "set_online", []);
   console.log("onlineCallData", setOnlineData);
   const onlineCall = mkContractCall({
     ...common,
@@ -82,7 +82,7 @@ export function mkValidatorCalls(
     nonce: 2n,
   });
 
-  const setNameData = encoder.encode(ct_name, "set_validator_name", [v.name]);
+  const setNameData = encoder.encodeCall(ct_name, "set_validator_name", [v.name]);
   console.log("setNameData", setNameData);
   const setNameCall = mkContractCall({
     ...common,
@@ -93,7 +93,7 @@ export function mkValidatorCalls(
   const calls = [nvCall, onlineCall, setNameCall];
 
   if (v.description) {
-    const setDescData = encoder.encode(ct_name, "set_validator_description", [
+    const setDescData = encoder.encodeCall(ct_name, "set_validator_description", [
       v.description,
     ]);
     console.log("setDescriptionData", setDescData);
@@ -107,7 +107,7 @@ export function mkValidatorCalls(
   }
 
   if (v.avatar_url) {
-    const setAvatarData = encoder.encode(ct_name, "set_validator_avatar_url", [
+    const setAvatarData = encoder.encodeCall(ct_name, "set_validator_avatar_url", [
       v.avatar_url,
     ]);
     console.log("setAvatarUrlData", setAvatarData);
@@ -122,13 +122,13 @@ export function mkValidatorCalls(
 export function mkBRIValidatorCalls(
   bri: AeBriAccount,
   contract: ContractDef,
-  encoder: aecalldata.Encoder,
+  encoder: aecalldata.AciContractCallEncoder,
   conf: InitConfig
 ): ContractCall[] {
   const ct_name: ContractName = "MainStaking";
   const contract_pubkey = contract.init.pubkey;
   const common = { caller: bri.pubKey, contract_pubkey, amount: 0n };
-  const newValidatorData = encoder.encode(ct_name, "new_validator", []);
+  const newValidatorData = encoder.encodeCall(ct_name, "new_validator", []);
   console.log("newValidatorData", newValidatorData);
   const nvCall = mkContractCall({
     ...common,
@@ -137,13 +137,13 @@ export function mkBRIValidatorCalls(
     amount: conf.validators.validatorMinStake,
   });
 
-  const setNameData = encoder.encode(ct_name, "set_validator_name", [bri.name]);
+  const setNameData = encoder.encodeCall(ct_name, "set_validator_name", [bri.name]);
   const setNameCall = mkContractCall({
     ...common,
     call_data: setNameData,
     nonce: 2n,
   });
-  const setAvatarData = encoder.encode(ct_name, "set_validator_avatar_url", [
+  const setAvatarData = encoder.encodeCall(ct_name, "set_validator_avatar_url", [
     bri.avatar_url,
   ]);
   console.log("setAvatarUrlData", setAvatarData);

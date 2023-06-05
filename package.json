@@ -8,8 +8,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.json",
-    "dev": "nodemon -e ts -w ./src -x pnpm run watch:serve",
-    "watch:serve": "node --loader ts-node/esm src/index.ts"
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "dev-watch": "nodemon -e ts -w ./src -x pnpm run dev"
   },
   "keywords": [
     "aeternity",
@@ -19,35 +19,32 @@
   "license": "MIT",
   "devDependencies": {
     "@types/json-bigint": "^1.0.1",
-    "@types/node": "^18.7.3",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
-    "eslint": "^8.22.0",
+    "@types/node": "^20.2.4",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.8.2",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-markdown": "^3.0.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "nodemon": "^2.0.19",
+    "nodemon": "^2.0.22",
     "openapi-typescript": "^5.4.1",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@aeternity/aepp-calldata": "^1.2.0",
-    "@aeternity/aepp-sdk": "^12.1.2",
+    "@aeternity/aepp-calldata": "^1.4.0",
+    "@aeternity/aepp-sdk": "^13.0.0",
+    "@scure/bip39": "^1.2.0",
     "@types/js-yaml": "^4.0.5",
-    "axios": "^0.27.2",
-    "bip39": "^3.0.4",
-    "chalk": "^5.0.1",
-    "commander": "^9.4.0",
-    "figlet": "^1.5.2",
+    "axios": "^1.4.0",
+    "commander": "^10.0.1",
     "js-yaml": "^4.1.0",
     "json-bigint": "^1.0.0",
-    "octokit": "^2.0.7",
     "unique-names-generator": "^4.7.1",
-    "zod": "^3.18.0"
+    "zod": "^3.21.4"
   }
 }

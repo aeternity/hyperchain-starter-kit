@@ -1,13 +1,11 @@
 import z from "zod";
 import fs from "fs";
 import path from "path";
-import yaml from "js-yaml";
 import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
-import aesdk from "@aeternity/aepp-sdk";
 import { AccountPubKey } from "./basicTypes.js";
+import {toAettos} from "@aeternity/aepp-sdk";
 
-const { toAettos } = aesdk;
 
 export const InitConfig = z.object({
   networkId: z.string(),
@@ -24,12 +22,7 @@ export const InitConfig = z.object({
     stakeDelay: z.bigint(),
     unstakeDelay: z.bigint(),
   }),
-  repo: z.object({
-    owner: z.string(),
-    repo: z.string(),
-    branch: z.string(),
-    ref: z.string(),
-  }),
+  contractSourcesPrefix: z.string(),
   docker: z.object({
     image: z.string(),
     tag: z.string(),
@@ -54,12 +47,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
       unstakeDelay: 0n,
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
-    repo: {
-      owner: "aeternity",
-      repo: "aeternity",
-      branch: "master",
-      ref: "HEAD",
-    },
+    contractSourcesPrefix: "https://raw.githubusercontent.com/aeternity/aeternity/v6.8.1/",
     docker: {
       image: "aeternity/aeternity",
       tag: "latest",

@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "ES6",
+    "module": "ES2022",
     "target": "esnext",
     "sourceMap": true,
     "outDir": "dist",
     "declaration": true,
-    "lib": ["ESNext", "dom"],
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
     "allowJs": true,
     "checkJs": true,
     "allowSyntheticDefaultImports": true,
@@ -14,10 +17,20 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "rootDir": "./src",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", "dist", "test/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test/**/*.ts"
+  ]
 }
