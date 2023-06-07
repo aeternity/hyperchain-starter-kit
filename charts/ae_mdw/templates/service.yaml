@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ae_mdw.fullname" . }}
+  labels:
+    {{- include "ae_mdw.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.mdwPort}}
+      targetPort: http
+      protocol: TCP
+      name: mdw-port
+    - port: {{ .Values.service.mdwWsPort}}
+      targetPort: http
+      protocol: TCP
+      name: mdw-ws-port
+    - port: {{ .Values.service.nodeInternalApiPort }}
+      targetPort: http
+      protocol: TCP
+      name: node-internal-api-port
+    - port: {{ .Values.service.nodeExternalApiPort }}
+      targetPort: http
+      protocol: TCP
+      name: node-external-api-port
+    - port: {{ .Values.service.nodeChannelsWsPort }}
+      targetPort: http
+      protocol: TCP
+      name: node-channels-ws-port
+  selector:
+    {{- include "ae_mdw.selectorLabels" . | nindent 4 }}

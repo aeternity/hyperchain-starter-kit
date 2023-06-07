@@ -1,0 +1,6 @@
+releases:
+  - name: ae-mdw
+    namespace: ae-hc
+    chart: "./charts/ae_mdw"
+    values:
+      - "./config/ae_mdw/values.yaml"
