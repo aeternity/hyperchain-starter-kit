@@ -86,6 +86,8 @@ tolerations: []
 
 affinity: {}
 
+networkId: "[change_me_to_network_id]"
+
 persistentVolumeClaimSize: 5Gi
 
 configSecrets:

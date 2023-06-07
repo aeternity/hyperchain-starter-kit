@@ -116,10 +116,13 @@ spec:
               mountPath: /home/aeternity/node/local/rel/aeternity/data
             - name: aeternity-json
               mountPath: /home/aeternity/aeternity.json
+              readOnly: true
             - name: accounts-json
-              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/hc_devnet_accounts.json
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json
+              readOnly: true
             - name: contracts-json
-              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/hc_devnet_contracts.json
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json
+              readOnly: true
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

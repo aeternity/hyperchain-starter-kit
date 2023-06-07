@@ -3,4 +3,4 @@ releases:
     namespace: ae-hc
     chart: "./charts/ae_mdw"
     values:
-      - "./config/ae_mdw/values.yaml"
+      - "./values/ae_mdw.yaml.gotmpl"
