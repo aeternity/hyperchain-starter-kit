@@ -81,6 +81,9 @@ tolerations: []
 
 affinity: {}
 
+networkId: ae_uat
+nodeConfigSecretName: default-node-config
+
 aeNodeDbClaimSize: 130Gi
 snapshotsDirClaimSize: 100Gi
 

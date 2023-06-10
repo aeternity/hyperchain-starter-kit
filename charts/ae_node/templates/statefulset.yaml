@@ -41,7 +41,7 @@ spec:
             claimName: ae-node-db
         - name: aeternity-config
           secret:
-            secretName: parent-chain-config
+            secretName: {{ .Values.nodeConfigSecretName }}
         - name: snapshot-retriever
           configMap:
             name: snapshot-retriever
