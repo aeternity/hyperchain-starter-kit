@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ae_node.fullname" . }}
+  labels:
+    {{- include "ae_node.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ae_node.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "ae_node.fullname" . }}
+  volumeClaimTemplates:
+    - metadata:
+        name: ae-node-db
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.aeNodeDbClaimSize }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ae_node.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ae_node.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: ae-node-db
+          persistentVolumeClaim:
+            claimName: ae-node-db
+        - name: aeternity-config
+          secret:
+            secretName: parent-chain-config
+        - name: snapshot-retriever
+          configMap:
+            name: snapshot-retriever
+        - name: db-snapshots
+          persistentVolumeClaim:
+            claimName: db-snapshots
+{{/*      initContainers:*/}}
+{{/*        - name: db-snapshot-retriever*/}}
+{{/*          image: ubuntu:22.04*/}}
+{{/*          volumeMounts:*/}}
+{{/*            - mountPath: /home/aeternity/node/data/mnesia*/}}
+{{/*              name: ae-node-db*/}}
+{{/*            - mountPath: /home/aeternity/snapshots/*/}}
+{{/*              name: db-snapshots*/}}
+{{/*            - mountPath: /home/aeternity/snapshot-retriever/*/}}
+{{/*              name: snapshot-retriever*/}}
+{{/*          command:*/}}
+{{/*            - /bin/bash*/}}
+{{/*            - -c*/}}
+{{/*            - apt update && apt install zstd && cd /home/aeternity/snapshot && bash ../snapshot-retriever/retrieve-snapshot.sh */}}
+
+      containers:
+        - name: {{ .Chart.Name }}
+{{/*          command: [ "/bin/bash" ]*/}}
+{{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+{{/*          image: "ubuntu:22.04"*/}}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: ext-api-port
+              containerPort: {{ .Values.ports.extApiPort }}
+              protocol: TCP
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- if .Values.envs }}
+            {{- toYaml .Values.envs | nindent 12 }}
+          {{- end }}
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /v3/status*/}}
+{{/*              port: ext-api-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /v3/status*/}}
+{{/*              port: ext-api-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+          volumeMounts:
+            - name: ae-node-db
+              mountPath: /home/aeternity/node/data/mnesia
+            - name: aeternity-config
+              mountPath: /home/aeternity/config/
+            - name: snapshot-retriever
+              mountPath: /home/aeternity/snapshot-retriever/
+            - mountPath: /home/aeternity/snapshots/
+              name: db-snapshots
+{{/*            - name: data-aecore-iris*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/*/}}
+{{/*            - name: accounts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json*/}}
+{{/*              readOnly: true*/}}
+{{/*            - name: contracts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json*/}}
+{{/*              readOnly: true*/}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

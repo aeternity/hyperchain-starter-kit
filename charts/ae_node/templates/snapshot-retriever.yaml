@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snapshot-retriever
+  namespace: {{ .Values.namespace }}
+data:
+  retrieve-snapshot.sh: |
+    FILENAME=uat_backup_v1_full_20230609T104428.tar.zst
+    MNESIA_DIR=/home/aeternity/node/data/mnesia/
+    REL_ROOT=https://aeternity-database-backups.s3.eu-central-1.amazonaws.com/
+    URL=$REL_ROOT$FILENAME
+    if [ -f "$FILENAME" ]; then
+      echo "File $FILENAME already exists."
+    else
+      echo "File $FILENAME does not exist. Downloading from $URL."
+      curl -o ./$FILENAME $URL
+    fi
+
+    SIZE=$(du -sk "$MNESIA_DIR" | cut -f1)
+    if [ "$SIZE" -gt "1024" ]; then
+        echo "Seems like MNESIA_DIR is not empty at $MNESIA_DIR"
+        exit 1
+    else
+{{/*      MD5_FILE=$REL_ROOT$FILENAME.md5*/}}
+{{/*      echo "Downloading checksum from $MD5_FILE"*/}}
+{{/*      CHECKSUM=$(curl https://aeternity-database-backups.s3.eu-central-1.amazonaws.com/$FILENAME.md5);*/}}
+{{/*      echo "Verifying checksum"*/}}
+{{/*      diff -qs <(echo $CHECKSUM) <(openssl md5 -r ./$FILENAME | awk '{ print $1; }');*/}}
+
+      echo "Extracting $FILENAME to $MNESIA_DIR"
+      test $? -eq 0 && tar --use-compress-program=unzstd -xf ./$FILENAME -C $MNESIA_DIR
+    fi
