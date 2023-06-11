@@ -39,7 +39,8 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 80
+  p2pPort: 22556
+  rpcPort: 22555
 
 ingress:
   enabled: false
@@ -87,3 +88,10 @@ dogeHomeSize: 130Gi
 envs:
   - name: HOME
     value: /home/dogecoin
+
+dogecoinConf:
+  rest: 1
+  rpcbind: "*"
+  disablewallet: 1
+  maxconnections: 64
+  addnode: doge1-eu.langerhans.de

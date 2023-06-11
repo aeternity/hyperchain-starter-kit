@@ -39,37 +39,40 @@ spec:
         - name: doge-home
           persistentVolumeClaim:
             claimName: doge-home
-        - name: doge-retriever
+        - name: doge-config
           configMap:
-            name: doge-retriever
+            name: doge-config
       initContainers:
         - name: doge-getter
           image: "debian:bullseye"
           volumeMounts:
             - name: doge-home
               mountPath: /home/dogecoin/
-            - name: doge-retriever
-              mountPath: /home/doge-retriever/
+            - name: doge-config
+              mountPath: /home/doge-config/
           command:
             - /bin/bash
             - -c
             - "cd /home/dogecoin && \
-               /bin/bash /home/doge-retriever/doge-retriever.sh"
+               /bin/bash /home/doge-config/doge-retriever.sh"
 
       containers:
         - name: {{ .Chart.Name }}
 {{/*          command: [ "/bin/bash" ]*/}}
 {{/*          args: [ "-c", "while true; do echo wow; sleep 10;done" ]*/}}
           command: ["/home/dogecoin/app/bin/dogecoind"]
-          args: ["-printtoconsole"]
+          args: ["-printtoconsole", "-conf=/home/doge-config/dogecoin.conf"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-{{/*          ports:*/}}
-{{/*            - name: ext-api-port*/}}
-{{/*              containerPort: {{ .Values.ports.extApiPort }}*/}}
-{{/*              protocol: TCP*/}}
+          ports:
+            - name: p2p-port
+              containerPort: {{ .Values.service.p2pPort }}
+              protocol: TCP
+            - name: rpc-port
+              containerPort: {{ .Values.service.rpcPort }}
+              protocol: TCP
           env:
             - name: POD_NAME
               valueFrom:
@@ -103,6 +106,8 @@ spec:
           volumeMounts:
             - name: doge-home
               mountPath: /home/dogecoin/
+            - name: doge-config
+              mountPath: /home/doge-config/
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

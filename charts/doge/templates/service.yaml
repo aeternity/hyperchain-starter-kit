@@ -7,9 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.p2pPort }}
       targetPort: http
       protocol: TCP
-      name: http
+      name: p2p
+    - port: {{ .Values.service.rpcPort }}
+      targetPort: http
+      protocol: TCP
+      name: rpc
   selector:
     {{- include "doge.selectorLabels" . | nindent 4 }}
