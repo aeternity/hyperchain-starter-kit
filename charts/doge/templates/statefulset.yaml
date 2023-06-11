@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "doge.fullname" . }}
+  labels:
+    {{- include "doge.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "doge.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "doge.fullname" . }}
+  volumeClaimTemplates:
+    - metadata:
+        name: doge-home
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.dogeHomeSize }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "doge.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "doge.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: doge-home
+          persistentVolumeClaim:
+            claimName: doge-home
+        - name: doge-retriever
+          configMap:
+            name: doge-retriever
+      initContainers:
+        - name: doge-getter
+          image: "debian:bullseye"
+          volumeMounts:
+            - name: doge-home
+              mountPath: /home/dogecoin/
+            - name: doge-retriever
+              mountPath: /home/doge-retriever/
+          command:
+            - /bin/bash
+            - -c
+            - "cd /home/dogecoin && \
+               /bin/bash /home/doge-retriever/doge-retriever.sh"
+
+      containers:
+        - name: {{ .Chart.Name }}
+{{/*          command: [ "/bin/bash" ]*/}}
+{{/*          args: [ "-c", "while true; do echo wow; sleep 10;done" ]*/}}
+          command: ["/home/dogecoin/app/bin/dogecoind"]
+          args: ["-printtoconsole"]
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{/*          ports:*/}}
+{{/*            - name: ext-api-port*/}}
+{{/*              containerPort: {{ .Values.ports.extApiPort }}*/}}
+{{/*              protocol: TCP*/}}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- if .Values.envs }}
+            {{- toYaml .Values.envs | nindent 12 }}
+          {{- end }}
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /v3/status*/}}
+{{/*              port: ext-api-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /v3/status*/}}
+{{/*              port: ext-api-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+          volumeMounts:
+            - name: doge-home
+              mountPath: /home/dogecoin/
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

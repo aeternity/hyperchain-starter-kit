@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doge-retriever
+  namespace: {{ .Release.Namespace }}
+data:
+  doge-retriever.sh: |
+    #!/bin/bash
+    echo "$(ls -lha)"
+    ARCH=$(uname -m)
+    echo "PWD: $(pwd)"
+    FILENAME=dogecoin-{{ .Chart.AppVersion }}-$ARCH-linux-gnu.tar.gz
+    REL_ROOT=https://github.com/dogecoin/dogecoin/releases/download/v{{ .Chart.AppVersion }}/
+    URL=$REL_ROOT$FILENAME
+    rm app && ln -s ./dogecoin-{{ .Chart.AppVersion }} app
+    if [ -f "$FILENAME" ]; then
+      echo "File $FILENAME already exists. Skipping download."
+      exit 0
+    else
+      apt update && apt install -y curl
+      echo "File $FILENAME does not exist. Downloading from $URL."
+      curl -o ./$FILENAME $URL
+    fi
+    echo "Extracting $FILENAME"
+    test $? -eq 0 && tar -xxf ./$FILENAME
