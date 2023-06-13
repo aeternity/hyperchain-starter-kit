@@ -17,6 +17,7 @@ data:
     REL_ROOT=https://github.com/dogecoin/dogecoin/releases/download/v{{ .Chart.AppVersion }}/
     URL=$REL_ROOT$FILENAME
     rm app && ln -s ./dogecoin-{{ .Chart.AppVersion }} app
+    mkdir -p /home/dogecoin/.dogecoin/ && chown -R 1000:1000 /home/dogecoin/.dogecoin/
     if [ -f "$FILENAME" ]; then
       echo "File $FILENAME already exists. Skipping download."
       exit 0
@@ -27,3 +28,4 @@ data:
     fi
     echo "Extracting $FILENAME"
     test $? -eq 0 && tar -xxf ./$FILENAME
+
