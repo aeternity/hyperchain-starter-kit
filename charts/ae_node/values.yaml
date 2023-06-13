@@ -8,7 +8,7 @@ image:
   repository: "aeternity/aeternity"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  #tag: "v6.8.1"
+  # tag: "v6.8.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -81,17 +81,19 @@ tolerations: []
 
 affinity: {}
 
-networkId: ae_uat
-nodeConfigSecretName: default-node-config
-
 aeNodeDbClaimSize: 130Gi
 snapshotsDirClaimSize: 100Gi
 
 ports:
   extApiPort: 3013
 
+networkId: ae_uat
+restoreFromSnapshot:
+  # disabled if empty
+  fileName: ""
+
 envs:
   - name: AETERNITY_CONFIG
-    value: "/home/aeternity/config/aeternity.yaml"
+    value: "/home/aeternity/default-config/aeternity.yaml"
   - name: AE__HTTP__CORS__ALLOW_DOMAINS
     value: '["*"]'

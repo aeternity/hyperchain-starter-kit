@@ -1,8 +1,8 @@
 apiVersion: v1
-kind: Secret
+kind: ConfigMap
 metadata:
   name: default-node-config
-stringData:
+data:
   aeternity.yaml: |-
     sync:
       port: 3015
@@ -23,9 +23,10 @@ stringData:
 
     chain:
       persist: true
+      db_direct_access: true
       garbage_collection:
-        enabled: false
-        interval: 3
+        enabled: true
+        during_sync: true
         history: 500
 
     fork_management:

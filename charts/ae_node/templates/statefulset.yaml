@@ -39,29 +39,32 @@ spec:
         - name: ae-node-db
           persistentVolumeClaim:
             claimName: ae-node-db
-        - name: aeternity-config
-          secret:
-            secretName: {{ .Values.nodeConfigSecretName }}
+        - name: default-aeternity-config
+          configMap:
+            name: default-node-config
         - name: snapshot-retriever
           configMap:
             name: snapshot-retriever
         - name: db-snapshots
           persistentVolumeClaim:
             claimName: db-snapshots
-{{/*      initContainers:*/}}
-{{/*        - name: db-snapshot-retriever*/}}
-{{/*          image: ubuntu:22.04*/}}
-{{/*          volumeMounts:*/}}
-{{/*            - mountPath: /home/aeternity/node/data/mnesia*/}}
-{{/*              name: ae-node-db*/}}
-{{/*            - mountPath: /home/aeternity/snapshots/*/}}
-{{/*              name: db-snapshots*/}}
-{{/*            - mountPath: /home/aeternity/snapshot-retriever/*/}}
-{{/*              name: snapshot-retriever*/}}
-{{/*          command:*/}}
-{{/*            - /bin/bash*/}}
-{{/*            - -c*/}}
-{{/*            - apt update && apt install zstd && cd /home/aeternity/snapshot && bash ../snapshot-retriever/retrieve-snapshot.sh */}}
+
+      {{if .Values.restoreFromSnapshot.fileName }}
+      initContainers:
+        - name: db-snapshot-retriever
+          image: ubuntu:22.04
+          volumeMounts:
+            - mountPath: /home/aeternity/node/data/mnesia
+              name: ae-node-db
+            - mountPath: /home/aeternity/snapshots/
+              name: db-snapshots
+            - mountPath: /home/aeternity/snapshot-retriever/
+              name: snapshot-retriever
+          command:
+            - /bin/bash
+            - -c
+            - cd /home/aeternity/snapshots && bash ../snapshot-retriever/retrieve-snapshot.sh
+      {{end}}
 
       containers:
         - name: {{ .Chart.Name }}
@@ -69,8 +72,9 @@ spec:
 {{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+{{/*          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"*/}}
 {{/*          image: "ubuntu:22.04"*/}}
+          image: "aeternity/aeternity@sha256:ffbc05a6271986011db1b45b7f6530464cd1776533b3580598d2fb18dd36ab5e"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: ext-api-port
@@ -109,8 +113,8 @@ spec:
           volumeMounts:
             - name: ae-node-db
               mountPath: /home/aeternity/node/data/mnesia
-            - name: aeternity-config
-              mountPath: /home/aeternity/config/
+            - name: default-aeternity-config
+              mountPath: /home/aeternity/default-config/
             - name: snapshot-retriever
               mountPath: /home/aeternity/snapshot-retriever/
             - mountPath: /home/aeternity/snapshots/
