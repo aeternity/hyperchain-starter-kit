@@ -1,5 +1,5 @@
 // This file was generated. Do not edit it manually.
-// Schema copied from https://raw.githubusercontent.com/aeternity/aeternity/master/apps/aeutils/priv/aeternity_config_schema.json
+// Schema copied from https://raw.githubusercontent.com/aeternity/aeternity/f366753cfd22e64d90d6d0f330627ca8764b25b6/apps/aeutils/priv/aeternity_config_schema.json
 
 import { z } from "zod";
 
