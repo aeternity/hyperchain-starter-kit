@@ -10,6 +10,7 @@ data:
     {{- end}}
   doge-retriever.sh: |
     #!/bin/bash
+    set -euo pipefail
     echo "$(ls -lha)"
     ARCH=$(uname -m)
     echo "PWD: $(pwd)"
