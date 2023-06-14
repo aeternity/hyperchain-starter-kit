@@ -10,7 +10,7 @@ This project aims at automating what is possible/easy to automate and documentin
 ## Structure
 The documentation (and the project) consists of mainly 2 parts:
 1. Generating and configuring the economy of the hyperchain. This means the initial accounts with their initial balances. 
-If you do that, you will be able to run the hyperchain on your local machine or if even on a server.
+If you do that, you will be able to run (manually) the hyperchain on your local machine or if even on a server.
 2. Setting up the actual environment that will allow you to run the blockchain in semi-production environment.
 For this we will be using docker and kubernetes. If you follow this part of the guide, you should be able to reach a
 point which is good enough to be what is usually called a "testnet".
