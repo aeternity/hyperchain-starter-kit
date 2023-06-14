@@ -5,15 +5,14 @@ There are many moving parts to operating a whole blockchain network.
 Hyperchains aim at being "lightweight" and "easy" to run. This is certainly true in the sense that
 creating one will not require a lot of (computing) resources.
 However, this is not necessarily the case when it comes to the amount of work and knowledge required to set up one.
-This project aims at automating what is possible/easy to automate and documenting the rest.
+This project aims at automating what is possible/easy to automate and documenting the rest of the process.
 
 ## Structure
 The documentation (and the project) consists of mainly 2 parts:
 1. Generating and configuring the economy of the hyperchain. This means the initial accounts with their initial balances. 
-If you do that, you will be able to run a hyperchain manually in a local environment or if you want to run it manually
-on your own servers.
+If you do that, you will be able to run the hyperchain on your local machine or if even on a server.
 2. Setting up the actual environment that will allow you to run the blockchain in semi-production environment.
-Fur this we will be using docker and kubernetes. If you follow this part of the guide, you should be able to reach a
+For this we will be using docker and kubernetes. If you follow this part of the guide, you should be able to reach a
 point which is good enough to be what is usually called a "testnet".
 
 ## Non-goals
@@ -51,9 +50,15 @@ keys.
 - **Staker** or **Delegator**: An account inside our hyperchain that stakes tokens with a validator to increase their
 staking power (and thus their chance of being selected to sign a block). It is expected that the validator rewards its 
 stakers by sharing the block rewards with them.
-- **Faucet**: An account and service that is used to distribute tokens to users. This is usually done for free and is
 popular on testnets. 
 - **BRI** and **BRI account**: Block reward initiative. This is a mechanism that sends a part of the rewards to the 
 Aeternity Crypto Foundation. You can disable or configure this for your blockchain.
 - **Genesis block**: The first block of the blockchain, containing the initial accounts and tokens (as their balances).
 We will be configuring this in order to bootstrap our hyperchain and this is the main focus of part 1 of this guide.
+- **Faucet**: An account and service that is used to distribute tokens to users. This is usually done for free and is
+- **Staking UI**: A web application that allows users to stake their tokens with a validator.
+- **Wallet**: A web application that allows users to manage their accounts and tokens, sign and send transactions to the
+hyperchain network (the nodes).
+- **Explorer**: A web application that allows users to view the blockchain state and transactions.
+- **Middleware** or **MDW**: An indexing service that allows the wallet to retrieve past transactions and also acts as
+the backend of the Explorer.
