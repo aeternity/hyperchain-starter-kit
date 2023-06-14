@@ -16,24 +16,27 @@ if [[ -z "$url" ]]; then
     exit 1
 fi
 
-# Downloading the smart contract
+# Download the json schema
 filename=$(basename "$url")
 wget -O "$filename" "$url"
 
-# Generate types
+# Generate Typescript types from json schema
 path="src/lib/configSchema/"
-output="${filename%.*}.ts"
-pnpm json-schema-to-zod -s "$path$filename" -t "$path$output"
+output_zod="${filename%.*}.ts"
+pnpm json2ts "$path$filename" > "$output_ts"
+
+# Generate Zod definitions from Typescript types
+output_ts="${filename%.*}-gen.d.ts"
+pnpm ts-to-zod "$path$output_ts" "$path$output_zod" --skipValidation --keepComments
 
 # Prepend some info.
-string_to_prepend="// This file was generated. Do not edit it manually.
-// Schema copied from $url
+string_to_prepend="// Json schema downloaded from $url
 "
 # Read the existing contents of the file
-file_contents=$(cat "$output")
+file_contents=$(cat "$output_zod")
 # Concatenate the string to prepend with the existing file contents
 new_contents="$string_to_prepend"$'\n'"$file_contents"
 # Overwrite the file with the new contents
-echo "$new_contents" > "$output"
+echo "$new_contents" > "$output_zod"
 
 echo "Script completed successfully."
