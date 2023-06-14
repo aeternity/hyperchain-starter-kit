@@ -12,9 +12,18 @@ spec:
   serviceName: {{ include "ae_mdw.fullname" . }}
   volumeClaimTemplates:
     - metadata:
-        name: mdw-data
+        name: mdw-db
       spec:
-        storageClassName: openebs-hostpath
+{{/*        storageClassName: openebs-hostpath*/}}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeClaimSize }}
+    - metadata:
+        name: node-mnesia
+      spec:
+{{/*        storageClassName: openebs-hostpath*/}}
         accessModes:
           - ReadWriteOnce
         resources:
@@ -37,20 +46,28 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        - name: mdw-data
+        - name: mdw-db
           persistentVolumeClaim:
-            claimName: mdw-data
-        - name: aeternity-json
+            claimName: mdw-db
+        - name: node-mnesia
+          persistentVolumeClaim:
+            claimName: node-mnesia
+        - name: aeternity-config
           secret:
-            secretName: aeternity-json
-        - name: accounts-json
+            secretName: aeternity-config
+        - name: data-aecore-iris
           secret:
-            secretName: accounts-json
-        - name: contracts-json
-          secret:
-            secretName: contracts-json
+            secretName: data-aecore-iris
+{{/*        - name: accounts-json*/}}
+{{/*          secret:*/}}
+{{/*            secretName: accounts-json*/}}
+{{/*        - name: contracts-json*/}}
+{{/*          secret:*/}}
+{{/*            secretName: contracts-json*/}}
       containers:
         - name: {{ .Chart.Name }}
+          command: [ "/bin/bash" ]
+          args: [ "-c", "while true; do echo hello; sleep 10;done" ]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -93,36 +110,39 @@ spec:
           {{- if .Values.envs }}
             {{- toYaml .Values.envs | nindent 12 }}
           {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /status
-              port: mdw-port
-            failureThreshold: 5
-            successThreshold: 1
-            initialDelaySeconds: 20
-            periodSeconds: 5
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /status
-              port: mdw-port
-            failureThreshold: 5
-            successThreshold: 1
-            initialDelaySeconds: 20
-            periodSeconds: 5
-            timeoutSeconds: 10
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /status*/}}
+{{/*              port: mdw-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /status*/}}
+{{/*              port: mdw-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
           volumeMounts:
-            - name: mdw-data
-              mountPath: /home/aeternity/node/local/rel/aeternity/data
-            - name: aeternity-json
-              mountPath: /home/aeternity/aeternity.json
-              readOnly: true
-            - name: accounts-json
-              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json
-              readOnly: true
-            - name: contracts-json
-              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json
-              readOnly: true
+            - name: mdw-db
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/mdw.db
+            - name: node-mnesia
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/mnesia
+            - name: aeternity-config
+              mountPath: /home/aeternity/config/
+            - name: data-aecore-iris
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/
+{{/*            - name: accounts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json*/}}
+{{/*              readOnly: true*/}}
+{{/*            - name: contracts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json*/}}
+{{/*              readOnly: true*/}}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

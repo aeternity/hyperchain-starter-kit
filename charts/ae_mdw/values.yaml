@@ -27,7 +27,7 @@ envs:
   - name: TELEMETRY_STATSD_HOST
     value: "localhost"
   - name: AETERNITY_CONFIG
-    value: "/home/aeternity/aeternity.json"
+    value: "/home/aeternity/config/aeternity.yaml"
   - name: AE__HTTP__CORS__ALLOW_DOMAINS
     value: '["*"]'
 
@@ -91,6 +91,6 @@ networkId: "[change_me_to_network_id]"
 persistentVolumeClaimSize: 5Gi
 
 configSecrets:
-  aeternityJsonSecretName: aeternity-json
+  aeternityJsonSecretName: aeternity-config
   accountsJsonSecretName: accounts-json
   contractsJsonSecretName: contracts-json
