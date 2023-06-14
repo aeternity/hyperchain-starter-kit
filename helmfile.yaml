@@ -1,0 +1,20 @@
+
+releases:
+  - name: doge
+    namespace: doge
+    chart: "./charts/doge"
+  - name: ae-node
+    namespace: ae-uat
+    chart: "./charts/ae_node"
+    values:
+      - "values/ae-uat.yaml"
+  - name: ae-node
+    namespace: ae-mainnet
+    chart: "./charts/ae_node"
+    values:
+      - "./values/ae-main.yaml"
+#  - name: ae-mdw
+#    namespace: ae-hc
+#    chart: "./charts/ae_mdw"
+#    values:
+#      - "./values/ae_mdw.yaml.gotmpl"

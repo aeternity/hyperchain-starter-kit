@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ae_mdw.fullname" . }}
+  labels:
+    {{- include "ae_mdw.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ae_mdw.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "ae_mdw.fullname" . }}
+  volumeClaimTemplates:
+    - metadata:
+        name: mdw-db
+      spec:
+{{/*        storageClassName: openebs-hostpath*/}}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeClaimSize }}
+    - metadata:
+        name: node-mnesia
+      spec:
+{{/*        storageClassName: openebs-hostpath*/}}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeClaimSize }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ae_mdw.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ae_mdw.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: mdw-db
+          persistentVolumeClaim:
+            claimName: mdw-db
+        - name: node-mnesia
+          persistentVolumeClaim:
+            claimName: node-mnesia
+        - name: aeternity-config
+          secret:
+            secretName: aeternity-config
+        - name: data-aecore-iris
+          secret:
+            secretName: data-aecore-iris
+{{/*        - name: accounts-json*/}}
+{{/*          secret:*/}}
+{{/*            secretName: accounts-json*/}}
+{{/*        - name: contracts-json*/}}
+{{/*          secret:*/}}
+{{/*            secretName: contracts-json*/}}
+      containers:
+        - name: {{ .Chart.Name }}
+          command: [ "/bin/bash" ]
+          args: [ "-c", "while true; do echo hello; sleep 10;done" ]
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: mdw-port
+              containerPort: {{ .Values.service.mdwPort}}
+              protocol: TCP
+            - name: ws-port
+              containerPort: {{ .Values.service.mdwWsPort}}
+              protocol: TCP
+            - name: int-api-port
+              containerPort: {{ .Values.service.nodeInternalApiPort }}
+              protocol: TCP
+            - name: ext-api-port
+              containerPort: {{ .Values.service.nodeExternalApiPort }}
+              protocol: TCP
+            - name: ch-ws-port
+              containerPort: {{ .Values.service.nodeChannelsWsPort }}
+              protocol: TCP
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: PORT
+              value: "{{ .Values.service.mdwPort}}"
+            - name: WS_PORT
+              value: "{{ .Values.service.mdwWsPort}}"
+            - name: AE__HTTP__EXTERNAL__PORT
+              value: "{{ .Values.service.nodeExternalApiPort }}"
+            - name: AE__HTTP__INTERNAL__PORT
+              value: "{{ .Values.service.nodeInternalApiPort }}"
+            - name: AE__WEBSOCKET__CHANNEL__PORT
+              value: "{{ .Values.service.nodeChannelsWsPort }}"
+          {{- if .Values.envs }}
+            {{- toYaml .Values.envs | nindent 12 }}
+          {{- end }}
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /status*/}}
+{{/*              port: mdw-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /status*/}}
+{{/*              port: mdw-port*/}}
+{{/*            failureThreshold: 5*/}}
+{{/*            successThreshold: 1*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 5*/}}
+{{/*            timeoutSeconds: 10*/}}
+          volumeMounts:
+            - name: mdw-db
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/mdw.db
+            - name: node-mnesia
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/mnesia
+            - name: aeternity-config
+              mountPath: /home/aeternity/config/
+            - name: data-aecore-iris
+              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/
+{{/*            - name: accounts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json*/}}
+{{/*              readOnly: true*/}}
+{{/*            - name: contracts-json*/}}
+{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json*/}}
+{{/*              readOnly: true*/}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
