@@ -1,5 +1,17 @@
 The goal of this project is to ease the process of bootstrapping an Aeternity hyperchain.
 
+<details>
+  <summary>Table of Contents</summary>
+
+- [Introduction](#introduction)
+- [Structure](#structure)
+- [Non-goals](#non-goals)
+- [Prerequisites/assumptions](#prerequisitesassumptions)
+- [Concepts and terminology](#concepts-and-terminology)
+- [Useful Links](#useful-links)
+
+</details>
+
 ## Introduction
 There are many moving parts to operating a whole blockchain network.
 Hyperchains aim at being "lightweight" and "easy" to run. This is certainly true in the sense that
@@ -28,21 +40,21 @@ But this guide can help you get started in this direction.
 And you can certainly use the provided components (like helm charts) to achieve this if you know what you are doing.
 
 ## Prerequisites/assumptions
-- You have a somewhat solid understanding of how blockchains work and aeternity in particular.
+- You have a somewhat solid understanding of how blockchains work and [æternity](https://github.com/aeternity/aeternity) in particular.
 - You are comfortable with the command line, you are a semi-competent unix administrator.
-- You either have access to a working Kubernetes cluster, or you are willing to set one up yourself.
+- You either have access to a working [Kubernetes](https://kubernetes.io/) cluster, or you are willing to set one up yourself.
 We will provide short instructions on how to do that, but this is not the main focus of this guide.
 - You will probably need to have a registered domain name if you want to run the network publicly.
 
 ## Concepts and terminology
-- **Hyperchain**: A blockchain that is running on aeternity software. It is a separate blockchain that has a different
-economy than the main aeternity blockchains. The tokens in this network are not AE tokens, and the operator can decide
-how to call them.
-- **Hyperchain node**: Or just "node" for short. This is the instance of the aeternity erlang software that is running
-the hyperchain. Initially we can configure only one node to represent the whole blockchain network, but more realistically
+- **Hyperchain**: A blockchain that is running on [æternity](https://github.com/aeternity/aeternity) software. It is a separate blockchain that has a different
+economy than the main æternity blockchains. The tokens in this network are not AE tokens, and the operator can decide
+how to call them. 
+- **Hyperchain node**: Or just "node" for short. This is the instance of the [æternity](https://github.com/aeternity/aeternity) erlang software that is running
+the hyperchain with special configuration. Initially we need to configure only one node to represent the whole blockchain network, but more realistically
 you will want to have several. Ideally many nodes (even third-party) can join your network for decentralization 
 and resilience.
-- **Parent chain** and **Parent chain node**: Can be the main aeternity blockchain, Bitcoin or Dogecoin.
+- **Parent chain** and **Parent chain node**: Can be the main [æternity](https://github.com/aeternity/aeternity) blockchain, Bitcoin or Dogecoin.
 This is the network where our hyperchain posts the so-called "commitments".
 This is how we secure the hyperchain.
 When we post commitments to the parent chain,
@@ -60,11 +72,15 @@ This is a mechanism that sends a part of the rewards to the Aeternity Crypto Fou
 You can disable or configure this for your blockchain.
 - **Genesis block**: The first block of the blockchain, containing the initial accounts and tokens (as their balances).
 We will be configuring this in order to bootstrap our hyperchain, and this is the main focus of part 1 of this guide.
-- **Faucet**: An account and service that is used to distribute tokens to users. This is usually done for free and is
-  popular on testnets.
-- **Staking UI**: A web application that allows users to stake their tokens with validators.
+- **Faucet**: An account and [faucet service](https://github.com/aeternity/aepp-faucet) that is used to distribute tokens to users. This is usually done for free and is
+  popular on testnets. Example: [æternity testnet faucet](https://faucet.aepps.com/).
+- **[Staking UI](https://github.com/aeternity/aepp-hc-ui)**: A web application that allows users to stake their tokens with validators.
 - **Wallet**: A web application that allows users to manage their accounts and tokens, sign and send transactions to the
-hyperchain network (the nodes).
-- **Explorer**: A web application that allows users to view the blockchain state and transactions.
-- **Middleware** or **MDW**: An indexing service that allows the wallet to retrieve past transactions and also acts as
+hyperchain network (the nodes). Popular choices are [Superhero](https://wallet.superhero.com/) and [Base æpp](https://base.aepps.com/).
+- **Explorer**: A web application that allows users to view the blockchain state and transactions. Example: [æScan](https://aescan.io/)
+- **[Middleware](https://github.com/aeternity/ae_mdw)** or MDW: An indexing service that allows the wallet to retrieve past transactions and also acts as
 the backend to the Explorer and some wallets.
+
+## Useful Links
+- [Hyperchains whitepaper](https://forum.aeternity.com/t/hyperchains-whitepaper-is-released/7812)
+- [Hyperchains FAQ](https://forum.aeternity.com/t/hyperchains-faq/7629)
