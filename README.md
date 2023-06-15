@@ -8,7 +8,7 @@ However, this is not necessarily the case when it comes to the amount of work an
 This project aims at automating what is possible/easy to automate and documenting the rest of the process.
 
 ## Structure
-The documentation (and the project) consists of mainly 2 parts:
+The documentation (and the project) consists of two parts:
 1. Generating and configuring the economy of the hyperchain. This means the initial accounts with their initial balances. 
 If you do that, you will be able to run (manually) the hyperchain on your local machine or even on a server.
 2. Setting up the actual environment that will allow you to run the blockchain in a semi-production environment plus 
@@ -47,12 +47,12 @@ This is the network where our hyperchain posts the so-called "commitments".
 This is how we secure the hyperchain.
 When we post commitments to the parent chain,
 this is proof that we can not change the history of our hyperchain retroactively.
-- **Commitment**: A commitment is a hash of the current top block. It is posted to the parent chain.
-- **Validator**: An account inside our hyperchain that is allowed to sign blocks according to the consensus rules.
+- **Commitment**: A commitment is a hash of the current top block, that is posted to the parent chain.
+- **Validator**: An account on our hyperchain that is allowed to sign blocks according to the consensus rules.
 This is a special account that is run by the node. Sometimes it's hard to distinguish between the node and
 the validator as they are often used (in speech) interchangeably. A node can operate one or several validators if it
 has their private keys. A node can also not run validators, and then it's a non-mining node.
-- **Staker** or **Delegator**: An account inside our hyperchain that stakes tokens with a validator to increase their
+- **Staker** or **Delegator**: An account on our hyperchain that stakes tokens with a validator to increase their
 voting power (and thus their chance of being selected to sign a block). It is expected that the validator rewards its 
 stakers by sharing the block rewards with them.
 - **BRI** and **BRI account**: Block Reward Initiative.
@@ -67,4 +67,4 @@ We will be configuring this in order to bootstrap our hyperchain, and this is th
 hyperchain network (the nodes).
 - **Explorer**: A web application that allows users to view the blockchain state and transactions.
 - **Middleware** or **MDW**: An indexing service that allows the wallet to retrieve past transactions and also acts as
-the backend of the Explorer.
+the backend to the Explorer and some wallets.
