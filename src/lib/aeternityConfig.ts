@@ -65,6 +65,18 @@ const AeternityConfig = z
 type AeternityConfig = z.infer<typeof AeternityConfig>;
 type AeternityConfigSchemaZ = z.infer<typeof aeternityConfigSchemaSchema>;
 
+const staker = z.object({
+  hyper_chain_account: z.object({
+    pub: z.string().optional(),
+    priv: z.string().optional(),
+  }),
+  parent_chain_account: z.object({
+    pub: z.string().optional(),
+    priv: z.string().optional(),
+  }),
+});
+type TStaker = z.infer<typeof staker>;
+
 export function parseAeternityConf(path: string) {
   console.log("blah");
   const js = loadJsonFile(path);
@@ -121,16 +133,18 @@ export function genAeternityConf(
                   },
                 ],
               },
-              stakers: economy.validators.map((v) => ({
-                hyper_chain_account: {
-                  pub: v.account.addr,
-                  priv: v.account.privKey,
-                },
-                parent_chain_account: {
-                  pub: "",
-                  priv: "",
-                },
-              })),
+              stakers: economy.validators.map(
+                (v): TStaker => ({
+                  hyper_chain_account: {
+                    pub: v.account.addr,
+                    priv: v.account.privKey,
+                  },
+                  parent_chain_account: {
+                    pub: "",
+                    priv: "",
+                  },
+                })
+              ),
             },
           },
         },
