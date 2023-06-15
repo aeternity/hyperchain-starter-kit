@@ -39,9 +39,9 @@ spec:
         - name: ae-node-db
           persistentVolumeClaim:
             claimName: ae-node-db
-        - name: default-aeternity-config
+        - name: aeternity-config
           configMap:
-            name: default-node-config
+            name: aeternity-config
         - name: snapshot-retriever
           configMap:
             name: snapshot-retriever
@@ -72,9 +72,11 @@ spec:
 {{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-{{/*          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"*/}}
-{{/*          image: "ubuntu:22.04"*/}}
-          image: "aeternity/aeternity@sha256:ffbc05a6271986011db1b45b7f6530464cd1776533b3580598d2fb18dd36ab5e"
+          {{ if .Values.image.fullImageOverride }}
+          image: "{{ .Values.image.fullImageOverride }}"
+          {{ else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{ end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: ext-api-port
@@ -89,6 +91,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: AE__HTTP__CORS__ALLOW_DOMAINS
+              value: '["*"]'
+            - name: AETERNITY_CONFIG
+              value: "/home/aeternity/config/aeternity.yaml"
           {{- if .Values.envs }}
             {{- toYaml .Values.envs | nindent 12 }}
           {{- end }}
@@ -113,8 +119,8 @@ spec:
           volumeMounts:
             - name: ae-node-db
               mountPath: /home/aeternity/node/data/mnesia
-            - name: default-aeternity-config
-              mountPath: /home/aeternity/default-config/
+            - name: aeternity-config
+              mountPath: /home/aeternity/config/
             - name: snapshot-retriever
               mountPath: /home/aeternity/snapshot-retriever/
             - mountPath: /home/aeternity/snapshots/

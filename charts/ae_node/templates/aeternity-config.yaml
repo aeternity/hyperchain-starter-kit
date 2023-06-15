@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: default-node-config
+  name: aeternity-config
 data:
   aeternity.yaml: |-
     sync:
