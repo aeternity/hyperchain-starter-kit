@@ -96,7 +96,7 @@ export function genAeternityConf(
       db_direct_access: true,
       hard_forks: { 6: 0 },
       consensus: {
-        0: {
+        "0": {
           type: "hyper_chain",
           config: {
             contract_owner: OWNER_ADDR,
@@ -104,7 +104,7 @@ export function genAeternityConf(
             rewards_contract: mainStaking.init.pubkey,
             expected_key_block_rate: 2000,
             parent_chain: {
-              confirmations: 6,
+              confirmations: 10,
               start_height: startHeight - 101,
               consensus: {
                 network_id: "ae_mainnet",
@@ -122,18 +122,16 @@ export function genAeternityConf(
                   },
                 ],
               },
-              stakers: [
-                {
-                  hyper_chain_account: economy.validators.map((v) => ({
-                    pub: v.account.addr,
-                    priv: v.account.privKey,
-                  })),
-                  parent_chain_account: {
-                    pub: "",
-                    priv: "",
-                  },
+              stakers: economy.validators.map((v) => ({
+                hyper_chain_account: {
+                  pub: v.account.addr,
+                  priv: v.account.privKey,
                 },
-              ],
+                parent_chain_account: {
+                  pub: "",
+                  priv: "",
+                },
+              })),
             },
           },
         },
