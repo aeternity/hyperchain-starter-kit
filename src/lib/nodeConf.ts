@@ -7,7 +7,7 @@ import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
 import fs from "fs";
 import { ensureDir, toJSON } from "./utils.js";
-import { getHeight } from "./mainnet.js";
+import { getParentHeight } from "./aeParent.js";
 import { genAeternityConf } from "./aeternityConfig.js";
 
 const mkNodeConfDirPath = (dir: string) => path.join(dir, "nodeConfig");
@@ -58,7 +58,7 @@ export async function genNodeConfig(dir: string) {
     calls,
   };
   fs.writeFileSync(mkContractsJsonPath(dir, conf), toJSON(contractsFile));
-  const height = await getHeight();
+  const height = await getParentHeight(conf.parentChain.networkId);
   const aeConfig = genAeternityConf(
     conf,
     economy,

@@ -4,14 +4,22 @@ import path from "path";
 import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import { AccountPubKey } from "./basicTypes.js";
-import {toAettos} from "@aeternity/aepp-sdk";
+import { toAettos } from "@aeternity/aepp-sdk";
 
+export const AE_BRI_ACCOUNT =
+  "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8";
+export const AeNetworkId = z.union([
+  z.literal("ae_mainnet"),
+  z.literal("ae_uat"),
+]);
+export type AeNetworkId = z.infer<typeof AeNetworkId>;
 
 export const InitConfig = z.object({
   networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
   treasuryInitBalance: z.bigint(),
   aeBRIAccount: AccountPubKey,
+  parentChain: z.object({ type: z.literal("AE2AE"), networkId: AeNetworkId }),
   validators: z.object({
     count: z.bigint(),
     balance: z.bigint(),
@@ -35,7 +43,8 @@ export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
     globalUnstakeDelay: 0n,
-    aeBRIAccount: "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8",
+    aeBRIAccount: AE_BRI_ACCOUNT,
+    parentChain: { type: "AE2AE", networkId: "ae_uat" },
     validators: {
       count: 3n,
       balance: 3100000000000000000000000000n,
@@ -47,7 +56,8 @@ export const defaultInitConf = (networkId: string): InitConfig => {
       unstakeDelay: 0n,
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
-    contractSourcesPrefix: "https://raw.githubusercontent.com/aeternity/aeternity/v6.8.1/",
+    contractSourcesPrefix:
+      "https://raw.githubusercontent.com/aeternity/aeternity/v6.8.1/",
     docker: {
       image: "aeternity/aeternity",
       tag: "latest",

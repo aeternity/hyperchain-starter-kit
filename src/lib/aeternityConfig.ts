@@ -2,10 +2,9 @@ import z from "zod";
 import { AccountPubKey, ContractAddr } from "./basicTypes.js";
 import { loadJsonFile } from "./utils.js";
 import { ContractDef, OWNER_ADDR } from "./contracts.js";
-import { InitConfig } from "./init.js";
+import { AE_BRI_ACCOUNT, InitConfig } from "./init.js";
 import { Economy } from "./economy.js";
 import { aeternityConfigSchemaSchema } from "./configSchema/aeternity_config_schema";
-import { AeternityConfigSchema } from "./configSchema/aeternity_config_schema-gen";
 
 const Consensus = z
   .object({
@@ -54,7 +53,7 @@ const AeternityConfig = z
     chain: z.object({
       persist: z.literal(true),
       db_direct_access: z.literal(true),
-      hard_forks: z.object({ "6": z.literal(0n) }),
+      hard_forks: z.object({ "5": z.literal(0n) }),
       consensus: z
         .object({
           "0": Consensus,
@@ -94,7 +93,7 @@ export function genAeternityConf(
     chain: {
       persist: true,
       db_direct_access: true,
-      hard_forks: { 6: 0 },
+      hard_forks: { 5: 0 },
       consensus: {
         "0": {
           type: "hyper_chain",
@@ -104,12 +103,12 @@ export function genAeternityConf(
             rewards_contract: mainStaking.init.pubkey,
             expected_key_block_rate: 2000,
             parent_chain: {
-              confirmations: 10,
+              confirmations: 6,
               start_height: startHeight - 101,
               consensus: {
-                network_id: "ae_mainnet",
-                spend_address: "",
-                type: "AE2AE",
+                network_id: conf.parentChain.networkId,
+                type: conf.parentChain.type,
+                spend_address: AE_BRI_ACCOUNT,
               },
               polling: {
                 fetch_interval: 500,
