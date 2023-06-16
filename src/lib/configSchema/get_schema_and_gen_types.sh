@@ -22,11 +22,11 @@ wget -O "$filename" "$url"
 
 # Generate Typescript types from json schema
 path="src/lib/configSchema/"
-output_zod="${filename%.*}.ts"
+output_ts="${filename%.*}-gen.d.ts"
 pnpm json2ts "$path$filename" > "$output_ts"
 
 # Generate Zod definitions from Typescript types
-output_ts="${filename%.*}-gen.d.ts"
+output_zod="${filename%.*}.ts"
 pnpm ts-to-zod "$path$output_ts" "$path$output_zod" --skipValidation --keepComments
 
 # Prepend some info.

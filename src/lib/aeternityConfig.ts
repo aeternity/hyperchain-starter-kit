@@ -118,6 +118,8 @@ export function genAeternityConf(
               confirmations: 6,
               start_height: startHeight - 101,
               consensus: {
+                amount: 9700,
+                fee: 100000000000000,
                 network_id: conf.parentChain.networkId,
                 type: conf.parentChain.type,
                 spend_address: AE_BRI_ACCOUNT,
@@ -133,19 +135,19 @@ export function genAeternityConf(
                   },
                 ],
               },
-              stakers: economy.validators.map(
-                (v): TStaker => ({
-                  hyper_chain_account: {
-                    pub: v.account.addr,
-                    priv: v.account.privKey,
-                  },
-                  parent_chain_account: {
-                    pub: economy.parentChainAccount.addr,
-                    priv: economy.parentChainAccount.privKey,
-                  },
-                })
-              ),
             },
+            stakers: economy.validators.map(
+              (v): TStaker => ({
+                hyper_chain_account: {
+                  pub: v.account.addr,
+                  priv: v.account.privKey,
+                },
+                parent_chain_account: {
+                  pub: economy.parentChainAccount.addr,
+                  priv: economy.parentChainAccount.privKey,
+                },
+              })
+            ),
           },
         },
       },

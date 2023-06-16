@@ -1175,7 +1175,7 @@ export interface AeternityConfigSchema {
              */
             start_height?: number;
             /**
-             * Details of the parent chain
+             * Details of the parent chain. TODO: add 'fee' and 'amount'
              */
             consensus?: {
               /**
@@ -1187,9 +1187,10 @@ export interface AeternityConfigSchema {
                */
               spend_address?: string;
               /**
-               * The type of parent network connection. Possible values are 'AE2AE', 'AE2BTC', 'AE2DOGE'
+               * The type of parent network connection. Currently only AE, Bitcoin and Dogecoin are implemented
                */
-              type?: string;
+              type?: "AE2AE" | "AE2BTC" | "AE2DOGE";
+              [k: string]: unknown;
             };
             /**
              * Parent chain connection
@@ -1221,39 +1222,38 @@ export interface AeternityConfigSchema {
                 password?: string;
               }[];
             };
-            /**
-             * List of hyperchain accounts and associated parent chain accounts that this node should post commitments for
-             */
-            stakers?: {
-              /**
-               * Child chain staking account
-               */
-              hyper_chain_account?: {
-                /**
-                 * Public key
-                 */
-                pub?: string;
-                /**
-                 * Private key
-                 */
-                priv?: string;
-                [k: string]: unknown;
-              };
-              /**
-               * Parent chain commitment account
-               */
-              parent_chain_account?: {
-                /**
-                 * Public key
-                 */
-                pub?: string;
-                /**
-                 * Private key
-                 */
-                priv?: string;
-              };
-            }[];
           };
+          /**
+           * List of hyperchain accounts and associated parent chain accounts that this node should post commitments for
+           */
+          stakers?: {
+            /**
+             * Child chain staking account
+             */
+            hyper_chain_account?: {
+              /**
+               * Public key
+               */
+              pub?: string;
+              /**
+               * Private key
+               */
+              priv?: string;
+            };
+            /**
+             * Parent chain commitment account
+             */
+            parent_chain_account?: {
+              /**
+               * Public key
+               */
+              pub?: string;
+              /**
+               * Private key
+               */
+              priv?: string;
+            };
+          }[];
           [k: string]: unknown;
         };
         [k: string]: unknown;
