@@ -4,6 +4,9 @@ metadata:
   name: aeternity-config
 data:
   aeternity.yaml: |-
+    {{ if .Values.aeternityConfigOverride }}
+    {{ toYaml .Values.aeternityConfigOverride | nindent 4 }}
+    {{ else }}
     sync:
       port: 3015
       log_peer_connection_count_interval: 6000000
@@ -31,3 +34,4 @@ data:
 
     fork_management:
       network_id: {{ .Values.networkId }}
+    {{ end }}

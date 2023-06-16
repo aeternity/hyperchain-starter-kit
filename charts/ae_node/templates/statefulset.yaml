@@ -42,6 +42,9 @@ spec:
         - name: aeternity-config
           configMap:
             name: aeternity-config
+        - name: data-aecore-iris
+          configMap:
+            name: data-aecore-iris
         - name: snapshot-retriever
           configMap:
             name: snapshot-retriever
@@ -68,8 +71,8 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-{{/*          command: [ "/bin/bash" ]*/}}
-{{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
+          command: [ "/bin/bash" ]
+          args: [ "-c", "while true; do echo hello; sleep 10;done" ]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{ if .Values.image.fullImageOverride }}
@@ -125,14 +128,8 @@ spec:
               mountPath: /home/aeternity/snapshot-retriever/
             - mountPath: /home/aeternity/snapshots/
               name: db-snapshots
-{{/*            - name: data-aecore-iris*/}}
-{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/*/}}
-{{/*            - name: accounts-json*/}}
-{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_accounts.json*/}}
-{{/*              readOnly: true*/}}
-{{/*            - name: contracts-json*/}}
-{{/*              mountPath: /home/aeternity/node/local/rel/aeternity/data/aecore/.iris/{{ .Values.networkId }}_contracts.json*/}}
-{{/*              readOnly: true*/}}
+            - name: data-aecore-iris
+              mountPath: /home/aeternity/node/data/aecore/.iris
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

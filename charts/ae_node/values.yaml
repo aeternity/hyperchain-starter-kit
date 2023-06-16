@@ -95,4 +95,6 @@ restoreFromSnapshot:
   fileName: ""
 
 aeternityConfigOverride: {}
+accountsJsonOverride: ""
+contractsJsonOverride: ""
 
