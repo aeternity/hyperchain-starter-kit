@@ -152,5 +152,10 @@ export function genAeternityConf(
         },
       },
     },
+    http: {
+      endpoints: {
+        "dry-run": true,
+      },
+    },
   };
 }
