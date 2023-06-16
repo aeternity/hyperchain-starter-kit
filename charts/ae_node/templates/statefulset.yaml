@@ -10,6 +10,7 @@ spec:
     matchLabels:
       {{- include "ae_node.selectorLabels" . | nindent 6 }}
   serviceName: {{ include "ae_node.fullname" . }}
+  {{ if .Values.dbMount.persistent }}
   volumeClaimTemplates:
     - metadata:
         name: ae-node-db
@@ -18,7 +19,8 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.aeNodeDbClaimSize }}
+            storage: {{ .Values.dbMount.size }}
+  {{ end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -36,9 +38,20 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
+        {{ if .Values.dbMount.persistent }}
         - name: ae-node-db
           persistentVolumeClaim:
             claimName: ae-node-db
+        {{ else }}
+        - name: ae-node-db-ephemeral
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: {{ .Values.dbMount.size }}
+        {{ end }}
         - name: aeternity-config
           configMap:
             name: aeternity-config
@@ -48,9 +61,11 @@ spec:
         - name: snapshot-retriever
           configMap:
             name: snapshot-retriever
+        {{ if .Values.restoreFromSnapshot.fileName }}
         - name: db-snapshots
           persistentVolumeClaim:
             claimName: db-snapshots
+        {{ end }}
 
       initContainers:
         {{if .Values.restoreFromSnapshot.fileName }}
@@ -68,6 +83,7 @@ spec:
             - -c
             - cd /home/aeternity/snapshots && bash ../snapshot-retriever/retrieve-snapshot.sh
         {{end}}
+        {{if .Values.dbMount.persistent }}
         - name: db-chown
           image: ubuntu:22.04
           volumeMounts:
@@ -77,6 +93,7 @@ spec:
             - /bin/bash
             - -c
             - chown -R 1000:1000 /home/aeternity/node/data/mnesia
+        {{end}}
 
       containers:
         - name: {{ .Chart.Name }}
@@ -129,14 +146,21 @@ spec:
 {{/*            periodSeconds: 5*/}}
 {{/*            timeoutSeconds: 10*/}}
           volumeMounts:
+            {{ if .Values.dbMount.persistent }}
             - name: ae-node-db
               mountPath: /home/aeternity/node/data/mnesia
+            {{ else }}
+            - name: ae-node-db-ephemeral
+              mountPath: /home/aeternity/node/data/mnesia
+            {{ end }}
             - name: aeternity-config
               mountPath: /home/aeternity/config/
             - name: snapshot-retriever
               mountPath: /home/aeternity/snapshot-retriever/
+            {{ if .Values.restoreFromSnapshot.fileName }}
             - mountPath: /home/aeternity/snapshots/
               name: db-snapshots
+            {{ end }}
             - name: data-aecore-iris
               mountPath: /home/aeternity/node/data/aecore/.iris
           resources:

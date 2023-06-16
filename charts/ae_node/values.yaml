@@ -27,14 +27,14 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-#  runAsNonRoot: false
-#  runAsUser: 0
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
   # fsGroup: 2000
 
-securityContext: {}
-#  runAsNonRoot: false
-#  runAsUser: 0
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
   # capabilities:
   #   drop:
   #   - ALL
@@ -87,14 +87,17 @@ tolerations: []
 
 affinity: {}
 
-aeNodeDbClaimSize: 130Gi
-snapshotsDirClaimSize: 100Gi
+dbMount:
+  persistent: true
+  size: 130Gi
+
 
 ports:
   extApiPort: 3013
 
 networkId: ae_uat
 restoreFromSnapshot:
+  snapshotsDirClaimSize: 100Gi
   # disabled if empty
   fileName: ""
 
