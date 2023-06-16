@@ -31,10 +31,6 @@ export const InitConfig = z.object({
     unstakeDelay: z.bigint(),
   }),
   contractSourcesPrefix: z.string(),
-  docker: z.object({
-    image: z.string(),
-    tag: z.string(),
-  }),
 });
 
 export type InitConfig = z.infer<typeof InitConfig>;
@@ -57,11 +53,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
     contractSourcesPrefix:
-      "https://raw.githubusercontent.com/aeternity/aeternity/v6.8.1/",
-    docker: {
-      image: "aeternity/aeternity",
-      tag: "latest",
-    },
+      "https://raw.githubusercontent.com/aeternity/aeternity/f366753cfd22e64d90d6d0f330627ca8764b25b6/",
   };
 };
 

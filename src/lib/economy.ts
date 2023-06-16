@@ -16,6 +16,7 @@ export const AeBriAccount = z.object({
 export type AeBriAccount = z.infer<typeof AeBriAccount>;
 
 export const Economy = z.object({
+  parentChainAccount: AccountWithSecrets,
   treasury: z.object({
     account: AccountWithSecrets,
     initialBalance: z.bigint(),
@@ -47,6 +48,7 @@ export async function genEconomy(dir: string) {
     initialBalance: conf.treasuryInitBalance,
   };
   const economy: Economy = {
+    parentChainAccount: { addr: "ak_XXXX", privKey: "", mnemonic: "" },
     treasury,
     validators,
     aeBRIAccount: mkDefaultBri(conf),

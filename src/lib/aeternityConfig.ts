@@ -126,7 +126,7 @@ export function genAeternityConf(
                 fetch_interval: 500,
                 nodes: [
                   {
-                    host: "localhost",
+                    host: "ae-node.ae-uat.svc.cluster.local",
                     port: 3013,
                     user: "",
                     password: "",
@@ -140,8 +140,8 @@ export function genAeternityConf(
                     priv: v.account.privKey,
                   },
                   parent_chain_account: {
-                    pub: "",
-                    priv: "",
+                    pub: economy.parentChainAccount.addr,
+                    priv: economy.parentChainAccount.privKey,
                   },
                 })
               ),

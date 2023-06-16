@@ -6,11 +6,11 @@ import { ensureDir, loadJsonFile, readFile, toJSON } from "./utils.js";
 import fs from "fs";
 import { InitConfig, loadInitConf } from "./init.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
-import {encodeContractAddress, CompilerHttpNode} from "@aeternity/aepp-sdk"
+import { encodeContractAddress, CompilerHttpNode } from "@aeternity/aepp-sdk";
 import aecalldata from "@aeternity/aepp-calldata";
 import axios from "axios";
 
-export const SOURCE_DIR = "test/contracts/"
+export const SOURCE_DIR = "test/contracts/";
 export const OWNER_ADDR = "ak_11111111111111111111111111111115rHyByZ";
 export const HC_ENTROPY_STRING = "HC_ENTROPY";
 
@@ -41,7 +41,7 @@ export const mkContractInitPath = (dir: string, name: ContractName) =>
 
 export const ContractInit = z.object({
   abi_version: z.literal(3n),
-  vm_version: z.literal(8n),
+  vm_version: z.literal(7n),
   amount: z.literal(0n),
   nonce: z.bigint(),
   call_data: ContractDataEnc,
@@ -74,7 +74,7 @@ export const ContractDef = z.object({
   meta: ContractMeta,
   source: z.string(),
   aci: z.array(z.any()),
-  aciStr: z.string()
+  aciStr: z.string(),
 });
 export type ContractDef = z.infer<typeof ContractDef>;
 
@@ -86,8 +86,8 @@ export type ContractsFile = z.infer<typeof ContractsFile>;
 
 export const getContractSource = async (url: string) => {
   const response = await axios.get(url);
-  return response.data
-}
+  return response.data;
+};
 
 export async function genContractDef(
   sourcesPrefix: string,
@@ -105,14 +105,18 @@ export async function genContractDef(
 
   const encoder = new aecalldata.AciContractCallEncoder(compiled.aci);
 
-  const initCallDataEnc = encoder.encodeCall(contractName, "init", initCallData);
+  const initCallDataEnc = encoder.encodeCall(
+    contractName,
+    "init",
+    initCallData
+  );
   return {
     source,
     aci: compiled.aci,
     aciStr: toJSON(compiled.aci),
     init: {
       abi_version: 3n,
-      vm_version: 8n,
+      vm_version: 7n,
       amount: 0n,
       nonce: BigInt(nonce),
       code: ContractDataEnc.parse(compiled.bytecode),
@@ -130,30 +134,39 @@ export async function genContractDef(
 export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
   const stakingValidatorContrAddr = encodeContractAddress(OWNER_ADDR, 1);
   console.log("stakingValidatorContrAddr", stakingValidatorContrAddr);
-  const svContract = await genContractDef(init.contractSourcesPrefix, "StakingValidator", 1, [
-    OWNER_ADDR,
-    init.globalUnstakeDelay,
-  ]);
+  const svContract = await genContractDef(
+    init.contractSourcesPrefix,
+    "StakingValidator",
+    1,
+    [OWNER_ADDR, init.globalUnstakeDelay]
+  );
   // console.log(svContract);
   const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 2);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
-  const msContract = await genContractDef(init.contractSourcesPrefix, "MainStaking", 2, [
-    stakingValidatorContrAddr,
-    // "entropy_string",
-    init.validators.validatorMinStake,
-    init.validators.validatorMinPercent,
-    init.validators.stakeMinimum,
-    init.validators.onlineDelay,
-    init.validators.stakeDelay,
-    init.validators.unstakeDelay,
-  ]);
+  const msContract = await genContractDef(
+    init.contractSourcesPrefix,
+    "MainStaking",
+    2,
+    [
+      stakingValidatorContrAddr,
+      // "entropy_string",
+      init.validators.validatorMinStake,
+      init.validators.validatorMinPercent,
+      init.validators.stakeMinimum,
+      init.validators.onlineDelay,
+      init.validators.stakeDelay,
+      init.validators.unstakeDelay,
+    ]
+  );
   // console.log(msContract);
   const hcElectionContrAddr = encodeContractAddress(OWNER_ADDR, 3);
   console.log("hcElectionContrAddr", hcElectionContrAddr);
-  const hcElectionContract = await genContractDef(init.contractSourcesPrefix, "HCElection", 3, [
-    mainStakingContrAddr,
-    HC_ENTROPY_STRING,
-  ]);
+  const hcElectionContract = await genContractDef(
+    init.contractSourcesPrefix,
+    "HCElection",
+    3,
+    [mainStakingContrAddr, HC_ENTROPY_STRING]
+  );
   return [svContract, msContract, hcElectionContract];
 }
 
