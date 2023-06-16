@@ -1,0 +1,7 @@
+releases:
+  - name: ae-node
+    namespace: hc2
+    chart: './charts/ae_node'
+    values:
+      - './values/ae_node.yaml.gotmpl'
+
