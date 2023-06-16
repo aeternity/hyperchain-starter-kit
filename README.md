@@ -72,7 +72,7 @@ This is a mechanism that sends a part of the rewards to the Aeternity Crypto Fou
 You can disable or configure this for your blockchain.
 - **Genesis block**: The first block of the blockchain, containing the initial accounts and tokens (as their balances).
 We will be configuring this in order to bootstrap our hyperchain, and this is the main focus of part 1 of this guide.
-- **Faucet**: An account and [faucet service](https://github.com/aeternity/aepp-faucet) that is used to distribute tokens to users. This is usually done for free and is
+- **Faucet**: An account and [faucet service](https://github.com/aeternity/aepp-faucet-nodejs) that is used to distribute tokens to users. This is usually done for free and is
   popular on testnets. Example: [æternity testnet faucet](https://faucet.aepps.com/).
 - **[Staking UI](https://github.com/aeternity/aepp-hc-ui)**: A web application that allows users to stake their tokens with validators.
 - **Wallet**: A web application that allows users to manage their accounts and tokens, sign and send transactions to the
