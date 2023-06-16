@@ -52,8 +52,8 @@ spec:
           persistentVolumeClaim:
             claimName: db-snapshots
 
-      {{if .Values.restoreFromSnapshot.fileName }}
       initContainers:
+        {{if .Values.restoreFromSnapshot.fileName }}
         - name: db-snapshot-retriever
           image: ubuntu:22.04
           volumeMounts:
@@ -67,12 +67,21 @@ spec:
             - /bin/bash
             - -c
             - cd /home/aeternity/snapshots && bash ../snapshot-retriever/retrieve-snapshot.sh
-      {{end}}
+        {{end}}
+        - name: db-chown
+          image: ubuntu:22.04
+          volumeMounts:
+            - mountPath: /home/aeternity/node/data/mnesia
+              name: ae-node-db
+          command:
+            - /bin/bash
+            - -c
+            - chown -R 1000:1000 /home/aeternity/node/data/mnesia
 
       containers:
         - name: {{ .Chart.Name }}
-          command: [ "/bin/bash" ]
-          args: [ "-c", "while true; do echo hello; sleep 10;done" ]
+{{/*          command: [ "/bin/bash" ]*/}}
+{{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{ if .Values.image.fullImageOverride }}

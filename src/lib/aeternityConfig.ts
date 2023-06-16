@@ -116,7 +116,7 @@ export function genAeternityConf(
             expected_key_block_rate: 2000,
             parent_chain: {
               confirmations: 6,
-              start_height: startHeight - 101,
+              start_height: startHeight + 2,
               consensus: {
                 amount: 9700,
                 fee: 100000000000000,
