@@ -1,4 +1,7 @@
 #{{ $networkId := readFile "../nodeConfig/aeternity.yaml" | fromYaml | get "fork_management.network_id" }}
+noAutoStart: true
+podSecurityContext:
+  runAsUser: 0
 dbMount:
   persistent: false
 networkId: {{ $networkId }}

@@ -1,7 +1,9 @@
+#{{ $networkId := readFile "./nodeConfig/aeternity.yaml" | fromYaml | get "fork_management.network_id" }}
+
 releases:
   - name: ae-node
-    namespace: hc2
-    chart: './charts/ae_node'
+    namespace: {{ $networkId }}
+    chart: '../../charts/ae_node'
     values:
       - './values/ae_node.yaml.gotmpl'
 
