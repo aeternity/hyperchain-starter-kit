@@ -90,6 +90,8 @@ export function parseAeternityConf(path: string) {
   console.log("stakers", ac.chain.consensus["0"].config.stakers);
 }
 
+export const calcStartHeight = (startHeight: number): number => startHeight + 2;
+
 export function genAeternityConf(
   conf: InitConfig,
   economy: Economy,
@@ -116,7 +118,7 @@ export function genAeternityConf(
             expected_key_block_rate: 2000,
             parent_chain: {
               confirmations: 6,
-              start_height: startHeight + 2,
+              start_height: calcStartHeight(startHeight),
               consensus: {
                 amount: 9700,
                 fee: 100000000000000,

@@ -5,7 +5,7 @@ import { program } from "commander";
 import { initDir } from "./lib/init.js";
 import { retrieveContracts } from "./lib/contracts.js";
 import { genEconomy } from "./lib/economy.js";
-import { genNodeConfig } from "./lib/nodeConf.js";
+import { genNodeConfig, updateParentHeight } from "./lib/nodeConf.js";
 import { parseAeternityConf } from "./lib/aeternityConfig.js";
 import { getHdWalletAccountFromSeed } from "@aeternity/aepp-sdk";
 import { mnemonicToSeedSync } from "@scure/bip39";
@@ -29,6 +29,7 @@ async function main() {
   prg.command("retrieve-contracts <directory>").action(retrieveContracts);
   prg.command("gen-economy <directory>").action(genEconomy);
   prg.command("gen-node-conf <directory>").action(genNodeConfig);
+  prg.command("update-parent-height <directory>").action(updateParentHeight);
   prg.command("parse-aeternity-conf <file>").action(parseAeternityConf);
   prg.command("mnemonic-to-privkey <mnemonic>").action(mnemonicToPrivKey);
   prg.parse(process.argv);
