@@ -1,9 +1,13 @@
 #{{ $networkId := readFile "./nodeConfig/aeternity.yaml" | fromYaml | get "fork_management.network_id" }}
 
+repositories:
+  - name: aeternity
+    url: "git+https://github.com/aeternity/hyperchain-starter-kit.git@charts?ref=master"
+
 releases:
   - name: ae-node
     namespace: {{ $networkId }}
-    chart: '../../charts/ae_node'
+    chart: 'aeternity/ae-node'
     values:
-      - './values/ae_node.yaml.gotmpl'
+      - './values/ae-node.yaml.gotmpl'
 
