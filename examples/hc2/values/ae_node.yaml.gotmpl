@@ -1,9 +1,10 @@
+#{{ $networkId := readFile "../nodeConfig/aeternity.yaml" | fromYaml | get "fork_management.network_id" }}
 dbMount:
   persistent: false
-networkId: {{ readFile "../nodeConfig/aeternity.yaml" | fromYaml | get "fork_management.network_id" }}
+networkId: {{ $networkId }}
 aeternityConfigOverride: {{ readFile "../nodeConfig/aeternity.yaml" | nindent 2 }}
 accountsJsonOverride: >+
-  {{ readFile "../nodeConfig/hc2_accounts.json" | nindent 2 | trim }}
+  {{ readFile (printf "../nodeConfig/%s_accounts.json" $networkId) | nindent 2 | trim }}
 contractsJsonOverride: >+
-  {{ readFile "../nodeConfig/hc2_contracts.json" | nindent 2 | trim }}
+  {{ readFile (printf "../nodeConfig/%s_contracts.json" $networkId) | nindent 2 | trim }}
 
