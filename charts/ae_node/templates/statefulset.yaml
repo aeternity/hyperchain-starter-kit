@@ -97,8 +97,10 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-{{/*          command: [ "/bin/bash" ]*/}}
-{{/*          args: [ "-c", "while true; do echo hello; sleep 10;done" ]*/}}
+          {{if .Values.noAutoStart}}
+          command: [ "/bin/bash" ]
+          args: [ "-c", "while true; do echo hello; sleep 10;done" ]
+          {{end}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{ if .Values.image.fullImageOverride }}
