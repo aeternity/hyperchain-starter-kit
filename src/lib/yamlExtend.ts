@@ -33,9 +33,10 @@ const SCHEMA_BIGINT = yaml.DEFAULT_SCHEMA.extend({
   implicit: [BigIntType],
 });
 
-export function loadYamlFile(filePath: string) {
+export function loadYamlFile(filePath: string, bigint = true) {
   const contents = readFileSync(filePath, { encoding: "utf8", flag: "r" });
-  return yaml.load(contents, { schema: SCHEMA_BIGINT });
+  const opts = bigint ? { schema: SCHEMA_BIGINT } : {};
+  return yaml.load(contents, opts);
 }
 export function writeYamlFile(filePath: string, obj: object) {
   const encoded = yaml.dump(obj, {

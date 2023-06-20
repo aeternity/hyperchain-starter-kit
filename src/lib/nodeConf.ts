@@ -8,7 +8,12 @@ import path from "path";
 import fs from "fs";
 import { ensureDir, toJSON } from "./utils.js";
 import { getParentHeight } from "./aeParent.js";
-import { calcStartHeight, genAeternityConf } from "./aeternityConfig.js";
+import { aeternityConfigSchemaSchema } from "./configSchema/aeternity_config_schema.js";
+import {
+  AeternityConfigSchemaZ,
+  calcStartHeight,
+  genAeternityConf,
+} from "./aeternityConfig.js";
 
 const mkNodeConfDirPath = (dir: string) => path.join(dir, "nodeConfig");
 
@@ -69,32 +74,25 @@ export async function genNodeConfig(dir: string) {
   writeYamlFile(mkAeternityConfPath(dir), aeConfig);
 }
 
+export function loadAeConf(dir: string): AeternityConfigSchemaZ {
+  const confFile = mkAeternityConfPath(dir);
+  return aeternityConfigSchemaSchema.parse(loadYamlFile(confFile, false));
+}
 export async function updateParentHeight(dir: string) {
   ensureDir(mkNodeConfDirPath(dir));
 
   const conf = loadInitConf(dir);
+  const aeConf = loadAeConf(dir);
   const currHeight = await getParentHeight(conf.parentChain.networkId);
   const startHeight = calcStartHeight(currHeight);
 
-  const filePath = mkAeternityConfPath(dir);
-  const regexPattern = /start_height: [0-9]*/g;
-  const newContent = `start_height: ${startHeight}`;
+  if (
+    aeConf?.chain?.consensus &&
+    aeConf?.chain?.consensus[0].config?.parent_chain?.start_height
+  ) {
+    aeConf.chain.consensus[0].config.parent_chain.start_height = startHeight;
+  }
 
-  fs.readFile(filePath, "utf8", (err, fileContents) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    const updatedContents = fileContents.replace(regexPattern, newContent);
-
-    fs.writeFile(filePath, updatedContents, "utf8", (writeErr) => {
-      if (writeErr) {
-        console.error(writeErr);
-        return;
-      }
-
-      console.log(`File updated successfully with height ${startHeight}.`);
-    });
-  });
+  writeYamlFile(mkAeternityConfPath(dir), aeConf);
+  console.log(`File updated successfully with height ${startHeight}.`);
 }

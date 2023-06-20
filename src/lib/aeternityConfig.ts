@@ -63,7 +63,9 @@ const AeternityConfig = z
   })
   .strict();
 type AeternityConfig = z.infer<typeof AeternityConfig>;
-type AeternityConfigSchemaZ = z.infer<typeof aeternityConfigSchemaSchema>;
+export type AeternityConfigSchemaZ = z.infer<
+  typeof aeternityConfigSchemaSchema
+>;
 
 const staker = z.object({
   hyper_chain_account: z.object({
