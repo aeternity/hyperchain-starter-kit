@@ -26,10 +26,26 @@ async function main() {
     .command("init <directory>")
     .description("Initialize a directory as a hyperchain config")
     .action(initDir);
-  prg.command("retrieve-contracts <directory>").action(retrieveContracts);
-  prg.command("gen-economy <directory>").action(genEconomy);
-  prg.command("gen-node-conf <directory>").action(genNodeConfig);
-  prg.command("update-parent-height <directory>").action(updateParentHeight);
+  prg
+    .command("retrieve-contracts <directory>")
+    .action(retrieveContracts)
+    .description("Download and compile staking/validator/election contracts");
+  prg
+    .command("gen-economy <directory>")
+    .action(genEconomy)
+    .description(
+      "Generate a list of treasury and validator accounts priv/pub keys in economy-unencrypted.yaml"
+    );
+  prg
+    .command("gen-node-conf <directory>")
+    .action(genNodeConfig)
+    .description("Generate aeternity.yaml.");
+  prg
+    .command("update-parent-height <directory>")
+    .action(updateParentHeight)
+    .description(
+      "Update parent_chain.start_height in aeternity.yaml so that it's 2 blocks in the future of the current parent block height."
+    );
   prg.command("parse-aeternity-conf <file>").action(parseAeternityConf);
   prg.command("mnemonic-to-privkey <mnemonic>").action(mnemonicToPrivKey);
   prg.parse(process.argv);
