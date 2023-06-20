@@ -1,7 +1,7 @@
 import yaml from "js-yaml";
 import { readFileSync, writeFileSync } from "fs";
 
-let options = Object.assign({}, (yaml as any).types.int.options);
+const options = Object.assign({}, (yaml as any).types.int.options);
 
 options.construct = (data: any) => {
   let value = data,
@@ -23,14 +23,11 @@ options.construct = (data: any) => {
   return sign * BigInt(value);
 };
 
-options.predicate = (object: object) => {
-  return (
-    Object.prototype.toString.call(object) === "[object BigInt]" ||
-    (yaml as any).types.int.options.predicate(object)
-  );
-};
+options.predicate = (object: object) =>
+  Object.prototype.toString.call(object) === "[object BigInt]" ||
+  (yaml as any).types.int.options.predicate(object);
 
-let BigIntType = new yaml.Type("tag:yaml.org,2002:int", options);
+const BigIntType = new yaml.Type("tag:yaml.org,2002:int", options);
 
 const SCHEMA_BIGINT = yaml.DEFAULT_SCHEMA.extend({
   implicit: [BigIntType],
