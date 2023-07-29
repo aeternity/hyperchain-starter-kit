@@ -9,8 +9,8 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   # tag: "v6.8.1"
-  # Overrides the whole image reference. Mostly useful if you want an exact image digest
-  fullImageOverride: "aeternity/aeternity@sha256:ffbc05a6271986011db1b45b7f6530464cd1776533b3580598d2fb18dd36ab5e"
+  # Overrides the whole image reference. Mostly useful if you want an exact image digest for a specific commit
+  # fullImageOverride: "aeternity/aeternity@sha256:ffbc05a6271986011db1b45b7f6530464cd1776533b3580598d2fb18dd36ab5e"
 
 imagePullSecrets: []
 nameOverride: ""
