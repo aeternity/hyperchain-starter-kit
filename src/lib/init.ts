@@ -8,18 +8,13 @@ import { toAettos } from "@aeternity/aepp-sdk";
 
 export const AE_BRI_ACCOUNT =
   "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8";
-export const AeNetworkId = z.union([
-  z.literal("ae_mainnet"),
-  z.literal("ae_uat"),
-]);
-export type AeNetworkId = z.infer<typeof AeNetworkId>;
 
 export const InitConfig = z.object({
   networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
   treasuryInitBalance: z.bigint(),
   aeBRIAccount: AccountPubKey,
-  parentChain: z.object({ type: z.literal("AE2AE"), networkId: AeNetworkId }),
+  parentChain: z.object({ type: z.literal("AE2AE"), networkId: z.string() }),
   validators: z.object({
     count: z.bigint(),
     balance: z.bigint(),
@@ -53,7 +48,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
     contractSourcesPrefix:
-      "https://raw.githubusercontent.com/aeternity/aeternity/f366753cfd22e64d90d6d0f330627ca8764b25b6/",
+      "https://raw.githubusercontent.com/aeternity/aeternity/v6.11.0/",
   };
 };
 
