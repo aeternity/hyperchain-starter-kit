@@ -1,7 +1,7 @@
 import z from "zod";
 import {getHdWalletAccountFromSeed} from "@aeternity/aepp-sdk";
 import {generateMnemonic, mnemonicToSeedSync} from "@scure/bip39"
-import { wordlist } from "@scure/bip39/wordlists/english.js";
+import { wordlist } from "@scure/bip39/wordlists/english";
 
 export const ContractDataEnc = z.custom<`cb_${string}`>(
   (v) => typeof v === "string" && v.startsWith("cb_")
