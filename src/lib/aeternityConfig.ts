@@ -2,7 +2,7 @@ import z from "zod";
 import { AccountPubKey, ContractAddr } from "./basicTypes.js";
 import { loadJsonFile } from "./utils.js";
 import { ContractDef, OWNER_ADDR } from "./contracts.js";
-import { AE_BRI_ACCOUNT, InitConfig } from "./init.js";
+import { InitConfig } from "./init.js";
 import { Economy } from "./economy.js";
 import { aeternityConfigSchemaSchema } from "./configSchema/aeternity_config_schema";
 
@@ -63,6 +63,7 @@ const AeternityConfig = z
       persist: z.literal(true),
       db_direct_access: z.literal(true),
       hard_forks: z.object({ "5": z.literal(0n) }),
+      protocol_beneficiaries_enabled: z.boolean(),
       consensus: z
         .object({
           "0": Consensus,
@@ -119,6 +120,7 @@ export function genAeternityConf(
       persist: true,
       db_direct_access: true,
       hard_forks: { 5: 0 },
+      protocol_beneficiaries_enabled: !!conf.aeBRIAccount,
       consensus: {
         "0": {
           type: "hyper_chain",
@@ -136,7 +138,7 @@ export function genAeternityConf(
                 fee: 100000000000000,
                 amount: 1,
                 network_id: conf.parentChain.networkId,
-                spend_address: AE_BRI_ACCOUNT,
+                spend_address: 'ak_11111111111111111111111111111115rHyByZ',
                 type: conf.parentChain.type,
               },
               polling: {

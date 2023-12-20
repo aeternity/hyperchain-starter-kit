@@ -6,14 +6,11 @@ import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import { AccountPubKey } from "./basicTypes.js";
 import { toAettos } from "@aeternity/aepp-sdk";
 
-export const AE_BRI_ACCOUNT =
-  "ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8";
-
 export const InitConfig = z.object({
   networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
   treasuryInitBalance: z.bigint(),
-  aeBRIAccount: AccountPubKey,
+  aeBRIAccount: z.optional(AccountPubKey),
   parentChain: z.object({ type: z.literal("AE2AE"), networkId: z.string() }),
   validators: z.object({
     count: z.bigint(),
@@ -34,7 +31,6 @@ export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
     globalUnstakeDelay: 0n,
-    aeBRIAccount: AE_BRI_ACCOUNT,
     parentChain: { type: "AE2AE", networkId: "ae_uat" },
     validators: {
       count: 3n,
