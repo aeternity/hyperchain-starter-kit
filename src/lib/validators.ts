@@ -91,6 +91,7 @@ export function mkValidatorCalls(
   });
 
   const calls = [nvCall, onlineCall, setNameCall];
+  let nonce = 3n;
 
   if (v.description) {
     const setDescData = encoder.encodeCall(ct_name, "set_validator_description", [
@@ -101,7 +102,7 @@ export function mkValidatorCalls(
       mkContractCall({
         ...common,
         call_data: setDescData,
-        nonce: 3n,
+        nonce: ++nonce,
       })
     );
   }
@@ -112,7 +113,7 @@ export function mkValidatorCalls(
     ]);
     console.log("setAvatarUrlData", setAvatarData);
     calls.push(
-      mkContractCall({ ...common, call_data: setAvatarData, nonce: 4n })
+      mkContractCall({ ...common, call_data: setAvatarData, nonce: ++nonce })
     );
   }
 

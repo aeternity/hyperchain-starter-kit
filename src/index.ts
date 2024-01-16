@@ -20,6 +20,13 @@ function mnemonicToPrivKey(mnemonic: string) {
   console.log("privkey: ", acc.secretKey);
 }
 
+function mnemonicToAccount(mnemonic: string, index = "0") {
+  const secretKey = mnemonicToSeedSync(mnemonic);
+  const idx = parseInt(index, 10);
+  const acc = getHdWalletAccountFromSeed(secretKey, idx);
+  console.log("account: ", acc);
+}
+
 async function main() {
   const prg = program.name("hyperchain-starter-kit");
   prg
@@ -48,6 +55,11 @@ async function main() {
     );
   prg.command("parse-aeternity-conf <file>").action(parseAeternityConf);
   prg.command("mnemonic-to-privkey <mnemonic>").action(mnemonicToPrivKey);
+  prg
+    .command("mnemonic-to-account")
+    .argument("<mnemonic>")
+    .argument("[index]", "account index", parseInt, 0)
+    .action(mnemonicToAccount);
   prg.parse(process.argv);
   // console.log("prg", prg);
 }

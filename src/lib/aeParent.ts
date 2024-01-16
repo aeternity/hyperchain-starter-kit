@@ -1,5 +1,4 @@
 import axios from "axios";
-import { AeNetworkId } from "./init";
 
 const NODES = {
   ae_mainnet: "https://mainnet.aeternity.io",
@@ -7,9 +6,13 @@ const NODES = {
 };
 
 export const getParentHeight = async (
-  networkId: AeNetworkId
+  networkId: string
 ): Promise<number> => {
-  const node = NODES[networkId];
+  if (!NODES.hasOwnProperty(networkId)) {
+    return 0;
+  }
+
+  const node = NODES[networkId as keyof typeof NODES];
   const resp = await axios.get(`${node}/v3/status`);
   // console.log("resp", resp.data);
   return resp.data.top_block_height;

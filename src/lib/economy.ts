@@ -28,7 +28,7 @@ export const Economy = z.object({
 export type Economy = z.infer<typeof Economy>;
 
 export const mkDefaultBri = (conf: InitConfig): Economy["aeBRIAccount"] => ({
-  pubKey: conf.aeBRIAccount,
+  pubKey: conf.aeBRIAccount || 'ak_11111111111111111111111111111115rHyByZ',
   name: "Aeternity BRI Account",
   avatar_url: "https://avatars.githubusercontent.com/u/21989234?s=200&v=4",
   initialBalance: conf.validators.balance,
@@ -51,7 +51,7 @@ export async function genEconomy(dir: string) {
     parentChainAccount: { addr: "ak_XXXX", privKey: "", mnemonic: "" },
     treasury,
     validators,
-    aeBRIAccount: mkDefaultBri(conf),
+    aeBRIAccount: conf.aeBRIAccount ? mkDefaultBri(conf) : undefined,
     faucet: { initialBalance: conf.validators.balance, account: genAccount() },
   };
   const filePath = mkEconomyPath(dir);

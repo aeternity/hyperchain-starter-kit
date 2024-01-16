@@ -1295,6 +1295,9 @@ export const aeternityConfigSchemaSchema = z.object({
                      * Something about rates.. FIXME
                      */
                     expected_key_block_rate: z.number().optional(),
+
+                    lazy_leader_trigger_time: z.number(),
+
                     /**
                      * Details of how this node will connect to a parent chain if this is a hyperchain.
                      */
@@ -1308,6 +1311,8 @@ export const aeternityConfigSchemaSchema = z.object({
                          * Height on the parent chain that this hyperchain will start posting commitments and start creating blocks
                          */
                         start_height: z.number().optional(),
+
+                        producing_commitments: z.boolean(),
                         /**
                          * Details of the parent chain. TODO: add 'fee' and 'amount'
                          */

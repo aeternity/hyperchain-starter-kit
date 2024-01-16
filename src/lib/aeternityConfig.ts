@@ -2,7 +2,7 @@ import z from "zod";
 import { AccountPubKey, ContractAddr } from "./basicTypes.js";
 import { loadJsonFile } from "./utils.js";
 import { ContractDef, OWNER_ADDR } from "./contracts.js";
-import { AE_BRI_ACCOUNT, InitConfig } from "./init.js";
+import { InitConfig } from "./init.js";
 import { Economy } from "./economy.js";
 import { aeternityConfigSchemaSchema } from "./configSchema/aeternity_config_schema";
 
@@ -20,20 +20,29 @@ const Consensus = z
         ),
         parent_chain: z
           .object({
-            confirmations: z.literal(101n),
-            fetch_interval: z.literal(1000n),
-            type: z.literal("AE"),
+            confirmations: z.literal(0n),
             start_height: z.bigint(),
-            nodes: z.array(
-              z
-                .object({
-                  host: z.literal("mainnet.aeternity.io"),
-                  password: z.literal("Pass"),
-                  port: z.bigint(),
-                  user: z.literal("test"),
-                })
-                .strict()
-            ),
+            producing_commitments: z.literal(true),
+            consensus: z.object({
+              fee: z.bigint(),
+              amount: z.bigint(),
+              network_id: z.string(),
+              spend_address: z.string(),
+              type: z.literal("AE2AE"),
+            }),
+            polling: z.object({
+              fetch_interval: z.bigint(),
+              nodes: z.array(
+                z
+                  .object({
+                    host: z.literal("mainnet.aeternity.io"),
+                    port: z.bigint(),
+                    user: z.literal("not used"),
+                    password: z.literal("not used"),
+                  })
+                  .strict()
+              ),
+            }),
           })
           .strict(),
       })
@@ -54,6 +63,7 @@ const AeternityConfig = z
       persist: z.literal(true),
       db_direct_access: z.literal(true),
       hard_forks: z.object({ "5": z.literal(0n) }),
+      protocol_beneficiaries_enabled: z.boolean(),
       consensus: z
         .object({
           "0": Consensus,
@@ -87,12 +97,12 @@ export function parseAeternityConf(path: string) {
   console.log("consensus config", ac.chain.consensus["0"]);
   console.log(
     "parent chain nodes",
-    ac.chain.consensus["0"].config.parent_chain.nodes
+    ac.chain.consensus["0"].config.parent_chain.polling.nodes
   );
   console.log("stakers", ac.chain.consensus["0"].config.stakers);
 }
 
-export const calcStartHeight = (startHeight: number): number => startHeight + 2;
+export const calcStartHeight = (startHeight: number): number => startHeight + 10;
 
 export function genAeternityConf(
   conf: InitConfig,
@@ -110,6 +120,7 @@ export function genAeternityConf(
       persist: true,
       db_direct_access: true,
       hard_forks: { 5: 0 },
+      protocol_beneficiaries_enabled: !!conf.aeBRIAccount,
       consensus: {
         "0": {
           type: "hyper_chain",
@@ -118,24 +129,26 @@ export function genAeternityConf(
             election_contract: hcElection.init.pubkey,
             rewards_contract: mainStaking.init.pubkey,
             expected_key_block_rate: 2000,
+            lazy_leader_trigger_time: 5000,
             parent_chain: {
-              confirmations: 6,
+              confirmations: 0,
               start_height: calcStartHeight(startHeight),
+              producing_commitments: true,
               consensus: {
-                amount: 9700,
                 fee: 100000000000000,
+                amount: 1,
                 network_id: conf.parentChain.networkId,
+                spend_address: 'ak_11111111111111111111111111111115rHyByZ',
                 type: conf.parentChain.type,
-                spend_address: AE_BRI_ACCOUNT,
               },
               polling: {
                 fetch_interval: 500,
                 nodes: [
                   {
-                    host: "ae-node.ae-uat.svc.cluster.local",
+                    host: "localhost",
                     port: 3013,
-                    user: "",
-                    password: "",
+                    user: "not used",
+                    password: "not used",
                   },
                 ],
               },
