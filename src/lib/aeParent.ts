@@ -17,3 +17,11 @@ export const getParentHeight = async (
   // console.log("resp", resp.data);
   return resp.data.top_block_height;
 };
+
+export const getParentNodeURL = (networkId: string): string => {
+  if (!NODES.hasOwnProperty(networkId)) {
+    return "http://localhost:3013";
+  }
+
+  return NODES[networkId as keyof typeof NODES];
+};

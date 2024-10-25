@@ -5,13 +5,21 @@ import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import { AccountPubKey } from "./basicTypes.js";
 import { toAettos } from "@aeternity/aepp-sdk";
+import { getParentNodeURL } from "./aeParent.js";
 
 export const InitConfig = z.object({
   networkId: z.string(),
   globalUnstakeDelay: z.bigint(),
+  childBlockTime: z.bigint(),
+  childEpochLength: z.bigint(),
   treasuryInitBalance: z.bigint(),
   aeBRIAccount: z.optional(AccountPubKey),
-  parentChain: z.object({ type: z.literal("AE2AE"), networkId: z.string() }),
+  parentChain: z.object({
+    type: z.literal("AE2AE"),
+    networkId: z.string(),
+    nodeURL: z.string(),
+    epochLength: z.bigint(),
+  }),
   validators: z.object({
     count: z.bigint(),
     balance: z.bigint(),
@@ -31,7 +39,17 @@ export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
     globalUnstakeDelay: 0n,
-    parentChain: { type: "AE2AE", networkId: "ae_uat" },
+    childBlockTime: 3000n,
+    // should be ~10 parent blocks in child blocks
+    // in case of 180s block time of AE and 3s block time of the child chain
+    // 180s * 10 = 1800/3 = 600
+    childEpochLength: 600n,
+    parentChain: {
+      type: "AE2AE",
+      networkId: "ae_uat",
+      nodeURL: getParentNodeURL("ae_uat"),
+      epochLength: 10n,
+    },
     validators: {
       count: 3n,
       balance: 3100000000000000000000000000n,
@@ -44,7 +62,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
     contractSourcesPrefix:
-      "https://raw.githubusercontent.com/aeternity/aeternity/v6.12.0/",
+      "https://raw.githubusercontent.com/aeternity/aeternity/master/",
   };
 };
 

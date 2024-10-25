@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CURDIR=$(dirname "$0")
+
 # Parsing CLI arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -18,16 +20,15 @@ fi
 
 # Download the json schema
 filename=$(basename "$url")
-wget -O "$filename" "$url"
+wget -O "$CURDIR/$filename" "$url"
 
 # Generate Typescript types from json schema
-path="src/lib/configSchema/"
-output_ts="${filename%.*}-gen.d.ts"
-pnpm json2ts "$path$filename" > "$output_ts"
+output_ts="$CURDIR/${filename%.*}-gen.d.ts"
+pnpm json2ts "$CURDIR/$filename" > "$output_ts"
 
 # Generate Zod definitions from Typescript types
-output_zod="${filename%.*}.ts"
-pnpm ts-to-zod "$path$output_ts" "$path$output_zod" --skipValidation --keepComments
+output_zod="$CURDIR/${filename%.*}.ts"
+pnpm ts-to-zod "$output_ts" "$output_zod" --skipValidation --keepComments
 
 # Prepend some info.
 string_to_prepend="// Json schema downloaded from $url

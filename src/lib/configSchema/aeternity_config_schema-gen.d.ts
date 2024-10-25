@@ -16,7 +16,7 @@ export interface AeternityConfigSchema {
      */
     offline_mode?: boolean;
     /**
-     * When true, the node sets up for development (default netw id: ae_dev, default consensus: on_demand)
+     * When true, the node sets up for development (default network id: ae_dev, default consensus: on_demand)
      */
     dev_mode?: boolean;
     /**
@@ -40,7 +40,8 @@ export interface AeternityConfigSchema {
       [k: string]: unknown;
     }[];
     /**
-     * Overrides the automatically derived file name for prefunded accounts. No default value
+     * @deprecated
+     * OBSOLETE/ignored: Overrides the automatically derived file name for prefunded accounts. No default value
      */
     custom_prefunded_accs_file?: string;
   };
@@ -69,6 +70,10 @@ export interface AeternityConfigSchema {
      * Interval between mempool (re-)synchronization (in ms) Default: `30 * 60 * 1000`
      */
     sync_interval?: number;
+    /**
+     * When to start syncing the mempool. A negative number indicates distance from the remote top; a positive number denotes absolute local height
+     */
+    sync_start?: number;
     /**
      * Maximum nonce offset accepted
      */
@@ -149,7 +154,7 @@ export interface AeternityConfigSchema {
          */
         insufficient_funds?: number;
         /**
-         * If there is something unexpected about the transaciton. Clean up.
+         * If there is something unexpected about the transaction. Clean up.
          */
         bad_transaction?: number;
         /**
@@ -373,7 +378,7 @@ export interface AeternityConfigSchema {
          */
         wrong_amt?: number;
         /**
-         * If the channel final amounts exceedthe channel balance. Clean up.
+         * If the channel final amounts exceed the channel balance. Clean up.
          */
         insufficient_channel_funds?: number;
         [k: string]: unknown;
@@ -404,7 +409,7 @@ export interface AeternityConfigSchema {
          */
         payload_deserialization_failed?: number;
         /**
-         * If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
+         * If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
          */
         bad_offchain_state_type?: number;
         /**
@@ -467,7 +472,7 @@ export interface AeternityConfigSchema {
          */
         payload_deserialization_failed?: number;
         /**
-         * If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
+         * If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
          */
         bad_offchain_state_type?: number;
         /**
@@ -526,7 +531,7 @@ export interface AeternityConfigSchema {
          */
         snapshot_must_have_payload?: number;
         /**
-         * If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
+         * If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
          */
         bad_offchain_state_type?: number;
         /**
@@ -573,7 +578,7 @@ export interface AeternityConfigSchema {
          */
         channel_does_not_exist?: number;
         /**
-         * If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
+         * If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.
          */
         bad_offchain_state_type?: number;
         /**
@@ -771,6 +776,10 @@ export interface AeternityConfigSchema {
      */
     ping_interval?: number;
     /**
+     * The lowest version of ping object that peers have to support
+     */
+    minimum_ping_version?: number;
+    /**
      * Listen port for external sync connections. This must be the WAN-facing port number (depending on NAT configuration this may be different from 'port' value above).
      */
     external_port?: number;
@@ -833,7 +842,7 @@ export interface AeternityConfigSchema {
      */
     gossip_allowed_height_from_top?: number;
     /**
-     * Once own node is synced, reject sync blocks at least this far from the current top; 0 means disabled
+     * Once the node is synced, reject synced blocks more than this distance from the current top; 0 means disabled
      */
     sync_allowed_height_from_top?: number;
     /**
@@ -848,6 +857,12 @@ export interface AeternityConfigSchema {
      * Time (milliseconds) between logging info about connected peers
      */
     log_peer_connection_count_interval?: number;
+    ping?: {
+      /**
+       * The percentage of connected peers sent in ping message. Recommend values are from 5-30.
+       */
+      peer_percentage?: number;
+    };
     peer_pool?: {
       /**
        * Probability of selecting a peer from the verified pool.
@@ -867,7 +882,6 @@ export interface AeternityConfigSchema {
        * The default maximum number of times a peer can get rejected. When reached, the peer is downgraded or removed (if not trusted).
        */
       max_rejections?: number;
-      [k: string]: unknown;
     };
     /**
      * Provide node version to peers
@@ -998,7 +1012,7 @@ export interface AeternityConfigSchema {
        */
       chain?: boolean;
       /**
-       * Transactions insection endpoints
+       * Transactions inspection endpoints
        */
       transactions?: boolean;
       /**
@@ -1010,9 +1024,14 @@ export interface AeternityConfigSchema {
        */
       dev?: boolean;
       /**
+       * @deprecated
        * Deprecated. See also 'http > internal > debug_endpoints'
        */
       debug?: boolean;
+      /**
+       * Endpoints specifically for child chain in hyperchain mode
+       */
+      hyperchain?: boolean;
       /**
        * Old endpoints that will be removed
        */
@@ -1023,6 +1042,7 @@ export interface AeternityConfigSchema {
       "dry-run"?: boolean;
     };
     /**
+     * @deprecated
      * Deprecated. See also 'http > internal > debug_endpoints' KILLME FIXME
      */
     debug?: boolean;
@@ -1096,6 +1116,18 @@ export interface AeternityConfigSchema {
      */
     persist?: boolean;
     /**
+     * Pre-funded accounts added to the genesis state trees - applied after prefunded accounts from file (if any).
+     */
+    genesis_accounts?: {
+      /**
+       * Token amount
+       *
+       * This interface was referenced by `undefined`'s JSON-Schema definition
+       * via the `patternProperty` "^ak_[a-z0-9]+".
+       */
+      [k: string]: number;
+    };
+    /**
      * Choice of database backend.
      */
     db_backend?: string;
@@ -1112,6 +1144,11 @@ export interface AeternityConfigSchema {
      */
     db_commit_bypass?: boolean;
     /**
+     * Enable checksum check for data read from DB - only applies for state tree (Merkle Patricia Tree) data. Relevant when using untrusted DB snapshot. This lowers DB read performance with 3% - 7%.
+     */
+    db_safe_access?: boolean;
+    /**
+     * @deprecated
      * OBSOLETE/ignored: Maximum number of retries for failing database write operations.
      */
     db_write_max_retries?: number;
@@ -1120,12 +1157,77 @@ export interface AeternityConfigSchema {
      */
     hard_forks?: {
       /**
-       * Minimum height at which protocol is effective
+       * Configuration for the hardfork
        *
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^[1-9][0-9]*$".
        */
-      [k: string]: number;
+      [k: string]:
+        | number
+        | {
+            /**
+             * Minimum height at which protocol is effective
+             */
+            height: number;
+            /**
+             * File where accounts are stored
+             */
+            accounts_file?: string;
+            /**
+             * File where extra accounts are stored
+             */
+            extra_accounts_file?: string;
+            /**
+             * File where contracts are stored
+             */
+            contracts_file?: string;
+            [k: string]: unknown;
+          };
+    };
+    currency?: {
+      /**
+       * Name of currency.
+       */
+      name?: string;
+      /**
+       * Symbol of currency.
+       */
+      symbol?: string;
+      /**
+       * Smallest subunit of currency.
+       */
+      subunit?: string;
+      /**
+       * Subunits per unit.
+       */
+      subunits_per_unit?: number;
+      /**
+       * @deprecated
+       * Use `fiat_conversion_url` instead
+       */
+      fiat_converstion_url?: string;
+      /**
+       * URL of the fiat conversion.
+       */
+      fiat_conversion_url?: string;
+    };
+    display?: {
+      /**
+       * Logo file of the chain.
+       */
+      logo_file?: string;
+      /**
+       * Primary colour for branding.
+       */
+      primary_colour?: string;
+      /**
+       * Secondary colour for branding.
+       */
+      secondary_colour?: string;
+      /**
+       * The display name of the network id, if not set defaults to Mainnet for ae_mainnet, Testnet for ae_uat otherwise network id
+       */
+      network_name?: string;
     };
     /**
      * The consensus algorithms used for validating blocks. Ignored if 'fork_management > network_id' has value 'ae_mainnet' or 'ae_uat'.
@@ -1139,7 +1241,7 @@ export interface AeternityConfigSchema {
        */
       [k: string]: {
         /**
-         * The type of the consensus algorithm used at the given height (ex. pow_cuckoo, smart_contract or hyper_chain)
+         * The type of the consensus algorithm used at the given height (ex. pow_cuckoo, smart_contract or hyperchain)
          */
         type: string;
         /**
@@ -1159,23 +1261,39 @@ export interface AeternityConfigSchema {
            */
           rewards_contract?: string;
           /**
-           * Something about rates.. FIXME
+           * Timestamp for genesis
            */
-          expected_key_block_rate?: number;
+          genesis_start_time?: number;
+          /**
+           * The time in milliseconds to produce a child block
+           */
+          child_block_time?: number;
+          /**
+           * The number of blocks in an epoch on the child chain
+           */
+          child_epoch_length?: number;
           /**
            * Details of how this node will connect to a parent chain if this is a hyperchain.
            */
           parent_chain?: {
             /**
-             * Minimum number of block confirmations required when selecting a UTXO for sending parent chain commitment transactions
-             */
-            confirmations?: number;
-            /**
              * Height on the parent chain that this hyperchain will start posting commitments and start creating blocks
              */
             start_height?: number;
             /**
-             * Details of the parent chain. TODO: add 'fee' and 'amount'
+             * The number of blocks on the parent chain to reach finality.
+             */
+            finality?: number;
+            /**
+             * The number of blocks in an epoch on the parent chain.
+             */
+            parent_epoch_length?: number;
+            /**
+             * The maximum amount of time the parent chain block generation can be off the expected time.
+             */
+            acceptable_sync_offset?: number;
+            /**
+             * Details of the parent chain.
              */
             consensus?: {
               /**
@@ -1183,67 +1301,40 @@ export interface AeternityConfigSchema {
                */
               network_id?: string;
               /**
-               * The address on the parent chain where commitment transactions will be sent. e.g. for a bitcoin parent chain this might start 'bcrt1'...
-               */
-              spend_address?: string;
-              /**
                * The type of parent network connection. Currently only AE, Bitcoin and Dogecoin are implemented
                */
               type?: "AE2AE" | "AE2BTC" | "AE2DOGE";
-              [k: string]: unknown;
             };
             /**
-             * Parent chain connection
+             * Parent chain connection configuration
              */
             polling?: {
               /**
-               * The interval between polls of the parent chain looking for a new block (millisec)
+               * The interval between polls of the parent chain looking for a new block (milliseconds)
                */
               fetch_interval?: number;
               /**
+               * The amount of time in milliseconds to wait before retrying a check for a block on the parent chain.
+               */
+              retry_interval?: number;
+              /**
+               * Size of local cache for parent chain
+               */
+              cache_size?: number;
+              /**
                * List of parent chain nodes to poll for new blocks
                */
-              nodes?: {
-                /**
-                 * Host name of IP address
-                 */
-                host?: string;
-                /**
-                 * Port number of HTTP API server on parent node
-                 */
-                port?: number;
-                /**
-                 * Username for HTTP API login if needed
-                 */
-                user?: string;
-                /**
-                 * Password for HTTP API login if needed
-                 */
-                password?: string;
-              }[];
+              nodes?: string[];
             };
           };
           /**
-           * List of hyperchain accounts and associated parent chain accounts that this node should post commitments for
+           * List of hyperchain accounts
            */
           stakers?: {
             /**
              * Child chain staking account
              */
             hyper_chain_account?: {
-              /**
-               * Public key
-               */
-              pub?: string;
-              /**
-               * Private key
-               */
-              priv?: string;
-            };
-            /**
-             * Parent chain commitment account
-             */
-            parent_chain_account?: {
               /**
                * Public key
                */
@@ -1263,17 +1354,9 @@ export interface AeternityConfigSchema {
      * If true, the node will split rewards and send part to protocol_beneficiaries
      */
     protocol_beneficiaries_enabled?: boolean;
-    /**
-     * @minItems 1
-     */
-    protocol_beneficiaries?: [
-      {
-        [k: string]: unknown;
-      },
-      ...{
-        [k: string]: unknown;
-      }[]
-    ];
+    protocol_beneficiaries?: {
+      [k: string]: unknown;
+    }[];
     garbage_collection?: {
       /**
        * If true, node will perform garbage collection of state trees, removing unreachable merkle patricia nodes and free some disk space
@@ -1288,6 +1371,7 @@ export interface AeternityConfigSchema {
        */
       minimum_height?: number;
       /**
+       * @deprecated
        * DEPRECATED. How often (every `interval` block) should garbage collection run
        */
       interval?: number;
@@ -1373,6 +1457,7 @@ export interface AeternityConfigSchema {
          */
         hex_encoded_header?: boolean;
         /**
+         * @deprecated
          * DEPRECATED: Miner process priority (niceness) in a UNIX fashion. Higher `nice` means lower priority. Keep it unset to inherit parent process priority.
          */
         nice?: number;
@@ -1388,6 +1473,7 @@ export interface AeternityConfigSchema {
         addressed_instances?: [number, ...number[]];
       }[];
       /**
+       * @deprecated
        * Deprecated way of configuring single miner. Please use 'mining > cuckoo > miners' and 'mining > cuckoo > edge_bits' instead. Note that this section CAN NOT be configured when either 'mining > cuckoo > miners' or 'mining > cuckoo > edge_bits' is set.
        */
       miner?: {
@@ -1615,7 +1701,6 @@ export interface AeternityConfigSchema {
        * Version of the chain in case of a successful fork.
        */
       version?: number;
-      [k: string]: unknown;
     };
   };
   stratum?: {

@@ -1,7 +1,7 @@
 import { definitions, paths } from "./compilerApi";
 import axios, { AxiosResponse } from "axios";
 
-export const COMPILER_URL = "https://v7.compiler.stg.aepps.com";
+export const COMPILER_URL = "https://v8.compiler.stg.aepps.com";
 
 export async function getACI(source: string): Promise<definitions["ACI"]> {
   const resp = await axios

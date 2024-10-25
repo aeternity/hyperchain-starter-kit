@@ -1,29 +1,20 @@
 #!/usr/bin/env node
 
-import axios from "axios";
 import { program } from "commander";
 import { initDir } from "./lib/init.js";
 import { retrieveContracts } from "./lib/contracts.js";
 import { genEconomy } from "./lib/economy.js";
 import { genNodeConfig, updateParentHeight } from "./lib/nodeConf.js";
 import { parseAeternityConf } from "./lib/aeternityConfig.js";
-import { getHdWalletAccountFromSeed } from "@aeternity/aepp-sdk";
-import { mnemonicToSeedSync } from "@scure/bip39";
+import { getAccount, genAccount } from "./lib/basicTypes.js";
 
-async function fetchContractSource(url: string): Promise<string> {
-  return (await axios.get(url)).data.trim().toString();
+function mnemonicToAccount(mnemonic: string, accountIndex: number = 0) {
+  const acc = getAccount(mnemonic, accountIndex);
+  console.log("account: ", acc);
 }
 
-function mnemonicToPrivKey(mnemonic: string) {
-  const secretKey = mnemonicToSeedSync(mnemonic);
-  const acc = getHdWalletAccountFromSeed(secretKey, 0);
-  console.log("privkey: ", acc.secretKey);
-}
-
-function mnemonicToAccount(mnemonic: string, index = "0") {
-  const secretKey = mnemonicToSeedSync(mnemonic);
-  const idx = parseInt(index, 10);
-  const acc = getHdWalletAccountFromSeed(secretKey, idx);
+function generateAccount() {
+  const acc = genAccount();
   console.log("account: ", acc);
 }
 
@@ -54,7 +45,10 @@ async function main() {
       "Update parent_chain.start_height in aeternity.yaml so that it's 2 blocks in the future of the current parent block height."
     );
   prg.command("parse-aeternity-conf <file>").action(parseAeternityConf);
-  prg.command("mnemonic-to-privkey <mnemonic>").action(mnemonicToPrivKey);
+  prg
+    .command("gen-account")
+    .action(generateAccount)
+    .description("Generate random account.");
   prg
     .command("mnemonic-to-account")
     .argument("<mnemonic>")

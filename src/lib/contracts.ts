@@ -41,7 +41,7 @@ export const mkContractInitPath = (dir: string, name: ContractName) =>
 
 export const ContractInit = z.object({
   abi_version: z.literal(3n),
-  vm_version: z.literal(7n),
+  vm_version: z.literal(8n),
   amount: z.literal(0n),
   nonce: z.bigint(),
   call_data: ContractDataEnc,
@@ -110,13 +110,14 @@ export async function genContractDef(
     "init",
     initCallData
   );
+
   return {
     source,
     aci: compiled.aci,
     aciStr: toJSON(compiled.aci),
     init: {
       abi_version: 3n,
-      vm_version: 7n,
+      vm_version: 8n,
       amount: 0n,
       nonce: BigInt(nonce),
       code: ContractDataEnc.parse(compiled.bytecode),
@@ -141,6 +142,7 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
     [OWNER_ADDR, init.globalUnstakeDelay]
   );
   // console.log(svContract);
+
   const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 2);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
   const msContract = await genContractDef(
@@ -149,7 +151,6 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
     2,
     [
       stakingValidatorContrAddr,
-      // "entropy_string",
       init.validators.validatorMinStake,
       init.validators.validatorMinPercent,
       init.validators.stakeMinimum,
@@ -159,13 +160,14 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
     ]
   );
   // console.log(msContract);
+
   const hcElectionContrAddr = encodeContractAddress(OWNER_ADDR, 3);
   console.log("hcElectionContrAddr", hcElectionContrAddr);
   const hcElectionContract = await genContractDef(
     init.contractSourcesPrefix,
     "HCElection",
     3,
-    [mainStakingContrAddr, HC_ENTROPY_STRING]
+    [mainStakingContrAddr]
   );
   return [svContract, msContract, hcElectionContract];
 }

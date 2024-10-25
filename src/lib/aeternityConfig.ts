@@ -8,40 +8,28 @@ import { aeternityConfigSchemaSchema } from "./configSchema/aeternity_config_sch
 
 const Consensus = z
   .object({
-    name: z.literal("hyper_chain"),
+    name: z.literal("hyperchain"),
     config: z
       .object({
+        child_block_time: z.bigint(),
+        child_epoch_length: z.bigint(),
         contract_owner: z.literal(OWNER_ADDR),
         election_contract: ContractAddr,
-        expected_key_block_rate: z.literal(2000n),
         rewards_contract: ContractAddr,
         stakers: z.array(
           z.object({ priv: z.string(), pub: AccountPubKey }).strict()
         ),
         parent_chain: z
           .object({
-            confirmations: z.literal(0n),
+            parent_epoch_length: z.bigint(),
             start_height: z.bigint(),
-            producing_commitments: z.literal(true),
             consensus: z.object({
-              fee: z.bigint(),
-              amount: z.bigint(),
               network_id: z.string(),
-              spend_address: z.string(),
               type: z.literal("AE2AE"),
             }),
             polling: z.object({
               fetch_interval: z.bigint(),
-              nodes: z.array(
-                z
-                  .object({
-                    host: z.literal("mainnet.aeternity.io"),
-                    port: z.bigint(),
-                    user: z.literal("not used"),
-                    password: z.literal("not used"),
-                  })
-                  .strict()
-              ),
+              nodes: z.array(z.string()),
             }),
           })
           .strict(),
@@ -62,7 +50,7 @@ const AeternityConfig = z
     chain: z.object({
       persist: z.literal(true),
       db_direct_access: z.literal(true),
-      hard_forks: z.object({ "5": z.literal(0n) }),
+      hard_forks: z.object({ "6": z.literal(0n) }),
       protocol_beneficiaries_enabled: z.boolean(),
       consensus: z
         .object({
@@ -119,38 +107,27 @@ export function genAeternityConf(
     chain: {
       persist: true,
       db_direct_access: true,
-      hard_forks: { 5: 0 },
+      hard_forks: { 6: 0 },
       protocol_beneficiaries_enabled: !!conf.aeBRIAccount,
       consensus: {
         "0": {
-          type: "hyper_chain",
+          type: "hyperchain",
           config: {
             contract_owner: OWNER_ADDR,
             election_contract: hcElection.init.pubkey,
             rewards_contract: mainStaking.init.pubkey,
-            expected_key_block_rate: 2000,
-            lazy_leader_trigger_time: 5000,
+            child_block_time: conf.childBlockTime,
+            child_epoch_length: conf.childEpochLength,
             parent_chain: {
-              confirmations: 0,
+              parent_epoch_length: conf.parentChain.epochLength,
               start_height: calcStartHeight(startHeight),
-              producing_commitments: true,
               consensus: {
-                fee: 100000000000000,
-                amount: 1,
                 network_id: conf.parentChain.networkId,
-                spend_address: 'ak_11111111111111111111111111111115rHyByZ',
                 type: conf.parentChain.type,
               },
               polling: {
                 fetch_interval: 500,
-                nodes: [
-                  {
-                    host: "localhost",
-                    port: 3013,
-                    user: "not used",
-                    password: "not used",
-                  },
-                ],
+                nodes: [conf.parentChain.nodeURL],
               },
             },
             stakers: economy.validators.map(
@@ -158,10 +135,6 @@ export function genAeternityConf(
                 hyper_chain_account: {
                   pub: v.account.addr,
                   priv: v.account.privKey,
-                },
-                parent_chain_account: {
-                  pub: economy.parentChainAccount.addr,
-                  priv: economy.parentChainAccount.privKey,
                 },
               })
             ),

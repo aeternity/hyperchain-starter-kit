@@ -18,7 +18,7 @@
                     "default" : false
                 },
                 "dev_mode" : {
-                    "description" : "When true, the node sets up for development (default netw id: ae_dev, default consensus: on_demand)",
+                    "description" : "When true, the node sets up for development (default network id: ae_dev, default consensus: on_demand)",
                     "type" : "boolean",
                     "default" : false
                 },
@@ -49,7 +49,8 @@
                     "default": []
                 },
                 "custom_prefunded_accs_file" : {
-                    "description" : "Overrides the automatically derived file name for prefunded accounts. No default value",
+                    "deprecated" : true,
+                    "description" : "OBSOLETE/ignored: Overrides the automatically derived file name for prefunded accounts. No default value",
                     "type" : "string"
                 }
             }
@@ -100,6 +101,11 @@
                    "type" : "integer",
                    "default" : 1800000
                 },
+                "sync_start" : {
+                    "description" : "When to start syncing the mempool. A negative number indicates distance from the remote top; a positive number denotes absolute local height",
+                    "type" : "integer",
+                    "default" : -100
+                },
                 "nonce_offset" : {
                     "description" : "Maximum nonce offset accepted",
                     "type" : "integer",
@@ -146,7 +152,7 @@
                                 "crash" : {
                                     "description" : "Something went really wrong, clean up.",
                                     "type" : "integer",
-                                    "default" : 1 
+                                    "default" : 1
                                 },
                                 "not_a_generalized_account" : {
                                     "description" : "If the transaction is being authenticated as a GA but the account is still basic. We provide a grace period in a number of generations for the account to be upgraded.",
@@ -212,7 +218,7 @@
                                     "default" : 20
                                 },
                                 "bad_transaction" : {
-                                    "description" : "If there is something unexpected about the transaciton. Clean up.",
+                                    "description" : "If there is something unexpected about the transaction. Clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 },
@@ -510,7 +516,7 @@
                                     "default" : 20
                                 },
                                 "insufficient_channel_funds" : {
-                                    "description" : "If the channel final amounts exceedthe channel balance. Clean up.",
+                                    "description" : "If the channel final amounts exceed the channel balance. Clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 }
@@ -551,7 +557,7 @@
                                     "default" : 1
                                 },
                                 "bad_offchain_state_type" : {
-                                    "description" : "If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
+                                    "description" : "If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 },
@@ -632,7 +638,7 @@
                                     "default" : 1
                                 },
                                 "bad_offchain_state_type" : {
-                                    "description" : "If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
+                                    "description" : "If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 },
@@ -708,7 +714,7 @@
                                     "default" : 1
                                 },
                                 "bad_offchain_state_type" : {
-                                    "description" : "If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
+                                    "description" : "If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 },
@@ -769,7 +775,7 @@
                                     "default" : 5
                                 },
                                 "bad_offchain_state_type" : {
-                                    "description" : "If the offhchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
+                                    "description" : "If the offchain state is from an unknown off-chain transaction type, if there is an upcoming fork to allow new off-chain transaction types - provide a grace period for it, otherwise clean up.",
                                     "type" : "integer",
                                     "default" : 1
                                 },
@@ -1036,6 +1042,11 @@
                     "type" : "integer",
                     "default" : 120000
                 },
+		"minimum_ping_version" : {
+		    "description" : "The lowest version of ping object that peers have to support",
+		    "type" : "integer",
+		    "default" : 1
+		},
                 "external_port" : {
                     "description" : "Listen port for external sync connections. This must be the WAN-facing port number (depending on NAT configuration this may be different from 'port' value above).",
                     "type" : "integer",
@@ -1122,9 +1133,9 @@
                     "default" : 5
                 },
                 "sync_allowed_height_from_top" : {
-                    "description": "Once own node is synced, reject sync blocks at least this far from the current top; 0 means disabled",
+                    "description": "Once the node is synced, reject synced blocks more than this distance from the current top; 0 means disabled",
                     "type" : "integer",
-                    "default" : 100
+                    "default" : 20
                 },
                 "resist_forks_from_start" : {
                     "description": "If sync_allowed_height_from_top > 0, this is applied at startup",
@@ -1134,16 +1145,29 @@
                 "whitelist_file" : {
                     "description" : "The name of a block hash whitelist file (JSON format)",
                     "type" : "string",
-                    "default" : ".block_whitelist.json" 
+                    "default" : ".block_whitelist.json"
                 },
                 "log_peer_connection_count_interval" : {
                     "description": "Time (milliseconds) between logging info about connected peers",
                     "type" : "integer",
                     "default": 300000
                 },
+                "ping" : {
+                    "type" : "object",
+                    "additionalProperties" : false,
+                    "properties" : {
+                        "peer_percentage" : {
+                            "description" : "The percentage of connected peers sent in ping message. Recommend values are from 5-30.",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "maximum" : 100,
+                            "default" : 10
+                        }
+                    }
+                },
                 "peer_pool" : {
                     "type" : "object",
-                    "additionalproperties" : false,
+                    "additionalProperties" : false,
                     "properties" : {
                         "select_verified_peer_probability" : {
                             "description" : "Probability of selecting a peer from the verified pool.",
@@ -1180,7 +1204,7 @@
                 "provide_node_info" : {
                     "description": "Provide node version to peers",
                     "type" : "boolean",
-                    "default": true 
+                    "default": true
                 },
                 "peer_analytics" : {
                     "description": "If enabled aggregates info about remote peers and exposes them via HTTP. Overrides max_inbound and max_outbound",
@@ -1372,7 +1396,7 @@
                             "type" : "boolean"
                         },
                         "transactions" : {
-                            "description" : "Transactions insection endpoints",
+                            "description" : "Transactions inspection endpoints",
                             "type" : "boolean"
                         },
                         "node-operator" : {
@@ -1385,7 +1409,12 @@
                             "type" : "boolean"
                         },
                         "debug" : {
+                            "deprecated" : true,
                             "description" : "Deprecated. See also 'http > internal > debug_endpoints'",
+                            "type" : "boolean"
+                        },
+                        "hyperchain" : {
+                            "description" : "Endpoints specifically for child chain in hyperchain mode",
                             "type" : "boolean"
                         },
                         "obsolete" : {
@@ -1399,6 +1428,7 @@
                     }
                 },
                 "debug" : {
+                    "deprecated" : true,
                     "description" : "Deprecated. See also 'http > internal > debug_endpoints' KILLME FIXME",
                     "type" : "boolean",
                     "default": false
@@ -1517,6 +1547,17 @@
                     "type" : "boolean",
                     "default" : true
                 },
+                "genesis_accounts" : {
+                    "description" : "Pre-funded accounts added to the genesis state trees - applied after prefunded accounts from file (if any).",
+                    "type" : "object",
+                    "patternProperties" : {
+                        "^ak_[a-z0-9]+" : {
+                            "description" : "Token amount",
+                            "type" : "integer"
+                        }
+                    }
+                },
+
                 "db_backend" : {
                     "description" : "Choice of database backend.",
                     "type" : "string",
@@ -1529,16 +1570,21 @@
                     "type" : "string",
                     "default" : "data"
                 },
-                "db_direct_access" : {
-                    "description" : "Use Db backend API rather than the Mnesia API",
-                    "type" : "boolean",
-                    "default" : false
-                },
-                "db_commit_bypass" : {
-                    "description" : "Use Rocksdb tricks to bypass Mnesia's default update logic at tx commit",
-                    "type" : "boolean",
-                    "default" : true
-                },
+		"db_direct_access" : {
+		    "description" : "Use Db backend API rather than the Mnesia API",
+		    "type" : "boolean",
+		    "default" : true
+		},
+		"db_commit_bypass" : {
+		    "description" : "Use Rocksdb tricks to bypass Mnesia's default update logic at tx commit",
+		    "type" : "boolean",
+		    "default" : true
+		},
+		"db_safe_access" : {
+		    "description" : "Enable checksum check for data read from DB - only applies for state tree (Merkle Patricia Tree) data. Relevant when using untrusted DB snapshot. This lowers DB read performance with 3% - 7%.",
+		    "type" : "boolean",
+		    "default" : false
+		},
                 "db_write_max_retries" : {
                     "deprecated" : true,
                     "description" : "OBSOLETE/ignored: Maximum number of retries for failing database write operations.",
@@ -1550,10 +1596,97 @@
                     "type" : "object",
                     "additionalProperties" : false,
                     "patternProperties" : {
-                        "^[1-9][0-9]*$": {
-                            "description" : "Minimum height at which protocol is effective",
+                        "^[1-9][0-9]*$" : {
+                            "description" : "Configuration for the hardfork",
+                            "oneOf" : [
+                            {
+                                "description" : "Minimum height at which protocol is effective using hardcoded directories for testing",
+                                "type" : "integer",
+                                "minimum" : 0
+                            },
+                            {
+                                "description" : "Configuration for the hardfork",
+                                "type" : "object",
+                                "required" : ["height"],
+                                "properties" : {
+                                    "height" : {
+                                        "description" : "Minimum height at which protocol is effective",
+                                        "type" : "integer",
+                                        "minimum" : 0
+                                    },
+                                    "accounts_file" : {
+                                        "description" : "File where accounts are stored",
+                                        "type" : "string"
+                                    },
+                                    "extra_accounts_file" : {
+                                        "description" : "File where extra accounts are stored",
+                                        "type" : "string"
+                                    },
+                                    "contracts_file" : {
+                                        "description" : "File where contracts are stored",
+                                        "type" : "string"
+                                    }
+                                }
+                            }]
+                        }
+                    }
+                },
+                "currency" : {
+                    "type" : "object",
+                    "additionalProperties" : false,
+                    "properties" : {
+                        "name": {
+                            "description": "Name of currency.",
+                            "type": "string",
+                            "default": "aeternity"
+                        },
+                        "symbol": {
+                            "description": "Symbol of currency.",
+                            "type": "string",
+                            "default": "AE"
+                        },
+                        "subunit" : {
+                            "description" : "Smallest subunit of currency.",
+                            "type" : "string",
+                            "default" : "aetto"
+                        },
+                        "subunits_per_unit" : {
+                            "description" : "Subunits per unit.",
                             "type" : "integer",
-                            "minimum" : 0
+                            "default" : 1000000000000000000
+                        },
+                        "fiat_converstion_url" : {
+                            "deprecated": true,
+                            "description" : "Use `fiat_conversion_url` instead",
+                            "type" : "string"
+                        },
+                        "fiat_conversion_url" : {
+                            "description" : "URL of the fiat conversion.",
+                            "type" : "string"
+                        }
+                    }
+                },
+                "display" : {
+                    "type" : "object",
+                    "additionalProperties" : false,
+                    "properties" : {
+                        "logo_file": {
+                            "description": "Logo file of the chain.",
+                            "type": "string"
+                        },
+                        "primary_colour": {
+                            "description": "Primary colour for branding.",
+                            "type": "string",
+                            "default": "#f5274e"
+                        },
+                        "secondary_colour" : {
+                            "description" : "Secondary colour for branding.",
+                            "type" : "string",
+                            "default" : "#242424"
+                        },
+                        "network_name": {
+                            "description" : "The display name of the network id, if not set defaults to Mainnet for ae_mainnet, Testnet for ae_uat otherwise network id",
+                            "type": "string"
                         }
                     }
                 },
@@ -1567,9 +1700,9 @@
                             "required": ["type"],
                             "properties": {
                                 "type": {
-                                    "description": "The type of the consensus algorithm used at the given height (ex. pow_cuckoo, smart_contract or hyper_chain)",
+                                    "description": "The type of the consensus algorithm used at the given height (ex. pow_cuckoo, smart_contract or hyperchain)",
                                     "type": "string",
-                                    "default": "hyper_chain"
+                                    "default": "hyperchain"
                                 },
                                 "config": {
                                     "description": "Configuration for the given consensus algorithm",
@@ -1577,22 +1710,27 @@
                                     "properties": {
                                         "contract_owner": {
                                             "description": "Owner of the smart contracts that controls the consensus.",
-                                            "default": "ak_11111111111111111111111111111115rHyByZ",
                                             "type": "string"
                                         },
                                         "election_contract": {
                                             "description": "The address of the smart contract that will be used for leader elections. For a new chain this contract should be loaded at genesis",
-                                            "default": "",
                                             "type": "string"
                                         },
                                         "rewards_contract": {
                                             "description": "The address of the smart contract that will be used for reward distributions. For a new chain this contract should be loaded at genesis",
-                                            "default": "",
                                             "type": "string"
                                         },
-                                        "expected_key_block_rate": {
-                                            "description": "Something about rates.. FIXME",
-                                            "default": 2000,
+                                        "genesis_start_time": {
+                                            "description": "Timestamp for genesis",
+                                            "default": 0,
+                                            "type": "integer"
+                                        },
+                                        "child_block_time": {
+                                            "description": "The time in milliseconds to produce a child block",
+                                            "type": "integer"
+                                        },
+                                        "child_epoch_length": {
+                                            "description": "The number of blocks in an epoch on the child chain",
                                             "type": "integer"
                                         },
                                         "parent_chain": {
@@ -1600,29 +1738,33 @@
                                             "additionalProperties" : false,
                                             "type" : "object",
                                             "properties": {
-                                                "confirmations": {
-                                                    "description": "Minimum number of block confirmations required when selecting a UTXO for sending parent chain commitment transactions",
-                                                    "default": 6,
-                                                    "type": "integer"
-                                                },
                                                 "start_height": {
                                                     "description": "Height on the parent chain that this hyperchain will start posting commitments and start creating blocks",
                                                     "default": 0,
                                                     "type": "integer"
                                                 },
+                                                "finality": {
+                                                    "description": "The number of blocks on the parent chain to reach finality.",
+                                                    "type": "integer"
+                                                },
+                                                "parent_epoch_length": {
+                                                    "description": "The number of blocks in an epoch on the parent chain.",
+                                                    "type": "integer"
+                                                },
+                                                "acceptable_sync_offset": {
+                                                    "description": "The maximum amount of time the parent chain block generation can be off the expected time.",
+                                                    "default": 60000,
+                                                    "type": "integer"
+                                                },
                                                 "consensus": {
-                                                    "description" : "Details of the parent chain. TODO: add 'fee' and 'amount'",
+                                                    "description" : "Details of the parent chain.",
                                                     "type" : "object",
+                                                    "additionalProperties" : false,
                                                     "properties": {
                                                         "network_id": {
                                                             "description" : "The network Id of the parent chain if it has one",
                                                             "type": "string",
                                                             "default": "ae_mainnet"
-                                                        },
-                                                        "spend_address": {
-                                                            "description" : "The address on the parent chain where commitment transactions will be sent. e.g. for a bitcoin parent chain this might start 'bcrt1'...",
-                                                            "type": "string",
-                                                            "default": ""
                                                         },
                                                         "type": {
                                                             "description" : "The type of parent network connection. Currently only AE, Bitcoin and Dogecoin are implemented",
@@ -1633,44 +1775,31 @@
                                                     }
                                                 },
                                                 "polling": {
-                                                    "description" : "Parent chain connection",
+                                                    "description" : "Parent chain connection configuration",
                                                     "type" : "object",
                                                     "additionalProperties" : false,
                                                     "properties": {
                                                         "fetch_interval": {
-                                                            "description" : "The interval between polls of the parent chain looking for a new block (millisec)",
+                                                            "description" : "The interval between polls of the parent chain looking for a new block (milliseconds)",
                                                             "type": "integer",
                                                             "default": 500
+                                                        },
+                                                        "retry_interval": {
+                                                            "description": "The amount of time in milliseconds to wait before retrying a check for a block on the parent chain.",
+                                                            "default": 1000,
+                                                            "type": "integer"
+                                                        },
+                                                        "cache_size": {
+                                                            "description" : "Size of local cache for parent chain",
+                                                            "type": "integer",
+                                                            "default": 200
                                                         },
                                                         "nodes": {
                                                             "description" : "List of parent chain nodes to poll for new blocks",
                                                             "type" : "array",
                                                             "items" : {
-                                                                "type" : "object",
-                                                                "description" : "Host name and login details",
-                                                                "additionalProperties" : false,
-                                                                "properties": {
-                                                                    "host": {
-                                                                        "description": "Host name of IP address",
-                                                                        "type": "string",
-                                                                        "default": "localhost"
-                                                                    },
-                                                                    "port": {
-                                                                        "description": "Port number of HTTP API server on parent node",
-                                                                        "type": "integer",
-                                                                        "default": 3013
-                                                                    },
-                                                                    "user": {
-                                                                        "description": "Username for HTTP API login if needed",
-                                                                        "type": "string",
-                                                                        "default": ""
-                                                                    },
-                                                                    "password": {
-                                                                        "description": "Password for HTTP API login if needed",
-                                                                        "type": "string",
-                                                                        "default": ""
-                                                                    }
-                                                                }
+                                                                "type" : "string",
+                                                                "description" : "URL address of the API - <protocol>://<user>:<password>@<hostname>:<port>"
                                                             },
                                                             "default": []
                                                         }
@@ -1679,32 +1808,15 @@
                                             }
                                         },
                                         "stakers": {
-                                            "description" : "List of hyperchain accounts and associated parent chain accounts that this node should post commitments for",
+                                            "description" : "List of hyperchain accounts",
                                             "type" : "array",
                                             "items" : {
                                                 "type" : "object",
                                                 "additionalProperties" : false,
-                                                "description" : "Hyperchain and parent chain account pair",
+                                                "description" : "Hyperchain account pair",
                                                 "properties": {
                                                     "hyper_chain_account": {
                                                         "description": "Child chain staking account",
-                                                        "type" : "object",
-                                                        "additionalProperties" : false,
-                                                        "properties": {
-                                                            "pub": {
-                                                                "description": "Public key",
-                                                                "type": "string",
-                                                                "default": ""
-                                                            },
-                                                            "priv": {
-                                                                "description": "Private key",
-                                                                "type": "string",
-                                                                "default": ""
-                                                            }
-                                                        }
-                                                    },
-                                                    "parent_chain_account": {
-                                                        "description": "Parent chain commitment account",
                                                         "type" : "object",
                                                         "additionalProperties" : false,
                                                         "properties": {
@@ -1739,11 +1851,9 @@
                 "protocol_beneficiaries" : {
                     "type" : "array",
                     "items" : {
-                        "description" : "Public keys belonging to protocol maintainers with reward shares (100 is 10%). If not set testnet or mainnet beneficiaries and shares will be used based on network_id configuration value. IMPORTANT: The value of this setting is under governance, thus it should not be changed without previous agreement within the configured network on doing so.",
-                        "pattern": "^ak_[1-9A-HJ-NP-Za-km-z]*:[0-9]+$"
-                    },
-                    "minItems": 1,
-                    "default" : ["ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8:109"]
+                        "description" : "Public keys belonging to protocol maintainers with reward shares (100 is 10%), optionally a protocol version can be specified from and/or to this account will be rewarded, e.g. ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8:109:6: specifies from Ceres onwards, ak_2KAcA2Pp1nrR8Wkt3FtCkReGzAi8vJ9Snxa4PcmrthVx8AhPe8:109::5 specifies to Iris. If not set testnet or mainnet beneficiaries and shares will be used based on network_id configuration value. IMPORTANT: The value of this setting is under governance, thus it should not be changed without previous agreement within the configured network on doing so.",
+                        "pattern": "^ak_[1-9A-HJ-NP-Za-km-z]*:[0-9]+(:[0-9]*:[0-9]*){0,1}$"
+                    }
                 },
                 "garbage_collection" : {
                     "type" : "object",
@@ -1766,6 +1876,7 @@
                             "default" : 0
                         },
                         "interval" : {
+                            "deprecated" : true,
                             "description" : "DEPRECATED. How often (every `interval` block) should garbage collection run",
                             "type" : "integer",
                             "minimum" : 3,
@@ -1900,6 +2011,7 @@
                                         "default" : false
                                     },
                                     "nice" : {
+                                        "deprecated" : true,
                                         "description" : "DEPRECATED: Miner process priority (niceness) in a UNIX fashion. Higher `nice` means lower priority. Keep it unset to inherit parent process priority.",
                                         "tags" : ["deprecated"],
                                         "type" : "integer"
@@ -1924,6 +2036,7 @@
                         "miner" : {
                             "type" : "object",
                             "tags" : ["deprecated"],
+                            "deprecated" : true,
                             "description" : "Deprecated way of configuring single miner. Please use 'mining > cuckoo > miners' and 'mining > cuckoo > edge_bits' instead. Note that this section CAN NOT be configured when either 'mining > cuckoo > miners' or 'mining > cuckoo > edge_bits' is set.",
                             "additionalProperties" : false,
                             "required" : [
@@ -2333,7 +2446,7 @@
                 },
                 "fork" : {
                     "type" : "object",
-                    "additionalproperties" : false,
+                    "additionalProperties" : false,
                     "required" : [
                         "enabled"
                     ],

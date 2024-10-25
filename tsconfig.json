@@ -32,5 +32,10 @@
     "node_modules",
     "dist",
     "test/**/*.ts"
-  ]
+  ],
+  "ts-node": {
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true,
+    "esm": true,
+  }
 }
