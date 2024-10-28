@@ -14,6 +14,7 @@ const Consensus = z
         child_block_time: z.bigint(),
         child_epoch_length: z.bigint(),
         contract_owner: z.literal(OWNER_ADDR),
+        staking_contract: ContractAddr,
         election_contract: ContractAddr,
         rewards_contract: ContractAddr,
         stakers: z.array(
@@ -114,6 +115,7 @@ export function genAeternityConf(
           type: "hyperchain",
           config: {
             contract_owner: OWNER_ADDR,
+            staking_contract: mainStaking.init.pubkey,
             election_contract: hcElection.init.pubkey,
             rewards_contract: mainStaking.init.pubkey,
             child_block_time: conf.childBlockTime,
