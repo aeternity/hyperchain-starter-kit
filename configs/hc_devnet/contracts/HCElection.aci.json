@@ -89,6 +89,10 @@
             {
               "name": "epoch_length",
               "type": "int"
+            },
+            {
+              "name": "base_pin_reward",
+              "type": "int"
             }
           ],
           "name": "init_epochs",
@@ -117,6 +121,20 @@
             {
               "name": "leader",
               "type": "address"
+            }
+          ],
+          "name": "step_micro",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "leader",
+              "type": "address"
             },
             {
               "name": "seed",
@@ -127,6 +145,14 @@
             {
               "name": "epoch_adjust",
               "type": "int"
+            },
+            {
+              "name": "next_base_pin_reward",
+              "type": "int"
+            },
+            {
+              "name": "carry_over_flag",
+              "type": "bool"
             }
           ],
           "name": "step_eoe",
@@ -224,10 +250,35 @@
           "stateful": false
         },
         {
-          "arguments": [],
-          "name": "get_state",
+          "arguments": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "name": "pin",
           "payable": false,
-          "returns": "HCElection.state",
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "pin_info",
+          "payable": false,
+          "returns": {
+            "option": [
+              "string"
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "pin_reward_info",
+          "payable": false,
+          "returns": "HCElection.pin_reward_info",
           "stateful": false
         }
       ],
@@ -260,6 +311,18 @@
                 "HCElection.epoch_info"
               ]
             }
+          },
+          {
+            "name": "pin",
+            "type": {
+              "option": [
+                "string"
+              ]
+            }
+          },
+          {
+            "name": "pin_reward",
+            "type": "HCElection.pin_reward_info"
           }
         ]
       },
@@ -302,6 +365,26 @@
                     }
                   ]
                 }
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "pin_reward_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "base",
+                "type": "int"
+              },
+              {
+                "name": "current",
+                "type": "int"
+              },
+              {
+                "name": "carry_over",
+                "type": "int"
               }
             ]
           },
