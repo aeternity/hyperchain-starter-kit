@@ -1,0 +1,20 @@
+childBlockTime: 3000
+childEpochLength: 600
+contractSourcesPrefix: 'https://raw.githubusercontent.com/aeternity/aeternity/master/'
+globalUnstakeDelay: 0
+networkId: 'hc_loadtest'
+parentChain:
+  epochLength: 10
+  networkId: 'ae_uat'
+  nodeURL: 'https://testnet.aeternity.io'
+  type: 'AE2AE'
+treasuryInitBalance: 1000000000000000000000000000000000000000000000000
+validators:
+  balance: 3100000000000000000000000000
+  count: 3
+  onlineDelay: 0
+  stakeDelay: 0
+  stakeMinimum: 1000000000000000000
+  unstakeDelay: 0
+  validatorMinPercent: 33
+  validatorMinStake: 1000000000000000000000000

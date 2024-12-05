@@ -1,0 +1,249 @@
+[
+  {
+    "namespace": {
+      "name": "ListInternal",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "List",
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "main_staking_ct",
+              "type": "address"
+            },
+            {
+              "name": "unstake_delay",
+              "type": "int"
+            }
+          ],
+          "name": "init",
+          "payable": false,
+          "returns": "StakingValidator.state",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "staker",
+              "type": "address"
+            }
+          ],
+          "name": "stake",
+          "payable": true,
+          "returns": "int",
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "value",
+              "type": "int"
+            }
+          ],
+          "name": "estimate_stake_shares",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "profit",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "distribute_unstake",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "staker",
+              "type": "address"
+            },
+            {
+              "name": "withdraw_shares",
+              "type": "int"
+            }
+          ],
+          "name": "unstake",
+          "payable": false,
+          "returns": "int",
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "get_state",
+          "payable": false,
+          "returns": "StakingValidator.state",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "who",
+              "type": "address"
+            }
+          ],
+          "name": "shares",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "all_shares",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "who",
+              "type": "address"
+            }
+          ],
+          "name": "balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "name",
+              "type": "string"
+            }
+          ],
+          "name": "set_name",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "description",
+              "type": "string"
+            }
+          ],
+          "name": "set_description",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "avatar_url",
+              "type": "string"
+            }
+          ],
+          "name": "set_avatar_url",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        }
+      ],
+      "kind": "contract_main",
+      "name": "StakingValidator",
+      "payable": false,
+      "state": {
+        "record": [
+          {
+            "name": "main_staking_ct",
+            "type": "address"
+          },
+          {
+            "name": "unstake_delay",
+            "type": "int"
+          },
+          {
+            "name": "pending_unstake_amount",
+            "type": "int"
+          },
+          {
+            "name": "pending_unstake",
+            "type": {
+              "map": [
+                "int",
+                {
+                  "list": [
+                    "StakingValidator.pending_transfer"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "avatar_url",
+            "type": "string"
+          },
+          {
+            "name": "delegates",
+            "type": {
+              "map": [
+                "address",
+                "int"
+              ]
+            }
+          },
+          {
+            "name": "shares",
+            "type": "int"
+          }
+        ]
+      },
+      "typedefs": [
+        {
+          "name": "pending_transfer",
+          "typedef": {
+            "record": [
+              {
+                "name": "staker",
+                "type": "address"
+              },
+              {
+                "name": "stake",
+                "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        }
+      ]
+    }
+  }
+]
