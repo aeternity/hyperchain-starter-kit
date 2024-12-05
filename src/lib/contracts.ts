@@ -103,6 +103,7 @@ export async function genContractDef(
   const compiler = new CompilerHttpNode(COMPILER_URL);
   const compiled = await compiler.compileBySourceCode(source);
 
+  // console.log('compiled:', compiled)
   const encoder = new aecalldata.AciContractCallEncoder(compiled.aci);
 
   const initCallDataEnc = encoder.encodeCall(
@@ -141,7 +142,7 @@ export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
     1,
     [OWNER_ADDR, init.globalUnstakeDelay]
   );
-  // console.log(svContract);
+  // console.log("svContract", svContract);
 
   const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 2);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
