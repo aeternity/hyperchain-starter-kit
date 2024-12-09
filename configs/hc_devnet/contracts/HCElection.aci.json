@@ -40,27 +40,47 @@
           "arguments": [
             {
               "name": "_1",
-              "type": "address"
+              "type": "int"
             }
           ],
-          "name": "is_validator",
+          "name": "lock_stake",
           "payable": false,
-          "returns": "bool",
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
           "stateful": false
         },
         {
-          "arguments": [],
-          "name": "total_stake",
-          "payable": false,
-          "returns": "int",
-          "stateful": false
-        },
-        {
-          "arguments": [],
-          "name": "post_elect",
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            },
+            {
+              "name": "_2",
+              "type": {
+                "list": [
+                  {
+                    "tuple": [
+                      "address",
+                      "int"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "add_rewards",
           "payable": false,
           "returns": "unit",
-          "stateful": true
+          "stateful": false
         }
       ],
       "kind": "contract_interface",
@@ -163,6 +183,40 @@
           "stateful": true
         },
         {
+          "arguments": [
+            {
+              "name": "proof",
+              "type": {
+                "bytes": "any"
+              }
+            }
+          ],
+          "name": "pin",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "name": "add_reward",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
           "arguments": [],
           "name": "leader",
           "payable": false,
@@ -250,26 +304,14 @@
           "stateful": false
         },
         {
-          "arguments": [
-            {
-              "name": "s",
-              "type": "string"
-            }
-          ],
-          "name": "pin",
-          "payable": false,
-          "returns": {
-            "tuple": []
-          },
-          "stateful": true
-        },
-        {
           "arguments": [],
           "name": "pin_info",
           "payable": false,
           "returns": {
             "option": [
-              "string"
+              {
+                "bytes": "any"
+              }
             ]
           },
           "stateful": false
@@ -296,8 +338,22 @@
             "type": "address"
           },
           {
-            "name": "added_stake",
-            "type": "int"
+            "name": "rewards",
+            "type": {
+              "map": [
+                "int",
+                {
+                  "list": [
+                    {
+                      "tuple": [
+                        "address",
+                        "int"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           },
           {
             "name": "epoch",
@@ -316,7 +372,9 @@
             "name": "pin",
             "type": {
               "option": [
-                "string"
+                {
+                  "bytes": "any"
+                }
               ]
             }
           },

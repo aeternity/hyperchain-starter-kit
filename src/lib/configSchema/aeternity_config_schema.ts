@@ -1400,13 +1400,25 @@ export const aeternityConfigSchemaSchema = z.object({
                      */
                     genesis_start_time: z.number().optional(),
                     /**
-                     * The time in milliseconds to produce a child block
+                     * The average time in milliseconds between two key blocks on the child chain
                      */
                     child_block_time: z.number().optional(),
+                    /**
+                     * The time in milliseconds to produce a child block
+                     */
+                    child_block_production_time: z.number().optional(),
                     /**
                      * The number of blocks in an epoch on the child chain
                      */
                     child_epoch_length: z.number().optional(),
+                    /**
+                     * The initial value of the Pinning reward. It can later be changed through consensus
+                     */
+                    pinning_reward_value: z.number().optional(),
+                    /**
+                     * The coinbase reward specifies the fixed amount of newly minted tokens allocated to block producers as an incentive for validating and adding blocks to the chain.
+                     */
+                    fixed_coinbase: z.number().optional(),
                     /**
                      * Details of how this node will connect to a parent chain if this is a hyperchain.
                      */
@@ -1493,6 +1505,34 @@ export const aeternityConfigSchemaSchema = z.object({
                                * Private key
                                */
                               priv: z.string().optional(),
+                            })
+                            .optional(),
+                        })
+                      )
+                      .optional(),
+                    /**
+                     * List of parent chain accounts
+                     */
+                    pinners: z
+                      .array(
+                        z.object({
+                          /**
+                           * Parent chain pinning account
+                           */
+                          parent_chain_account: z
+                            .object({
+                              /**
+                               * Public key
+                               */
+                              pub: z.string().optional(),
+                              /**
+                               * Private key
+                               */
+                              priv: z.string().optional(),
+                              /**
+                               * Public key of Hyperchain account owner
+                               */
+                              owner: z.string().optional(),
                             })
                             .optional(),
                         })

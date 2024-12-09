@@ -7,31 +7,21 @@ import { writeYamlFile } from "./yamlExtend.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
 
-export const AeBriAccount = z.object({
-  pubKey: AccountPubKey,
-  name: z.literal("Aeternity BRI Account"),
-  avatar_url: z.union([z.string(), z.null()]),
-  initialBalance: z.bigint(),
-});
-export type AeBriAccount = z.infer<typeof AeBriAccount>;
-
 export const Economy = z.object({
   treasury: z.object({
     account: AccountWithSecrets,
     initialBalance: z.bigint(),
   }),
-  aeBRIAccount: z.optional(AeBriAccount),
   validators: z.array(Validator),
+  pinners: z.array(
+    z.object({
+      account: AccountWithSecrets,
+      owner: z.string(),
+    })
+  ),
   faucet: z.object({ initialBalance: z.bigint(), account: AccountWithSecrets }),
 });
 export type Economy = z.infer<typeof Economy>;
-
-export const mkDefaultBri = (conf: InitConfig): Economy["aeBRIAccount"] => ({
-  pubKey: conf.aeBRIAccount || 'ak_11111111111111111111111111111115rHyByZ',
-  name: "Aeternity BRI Account",
-  avatar_url: "https://avatars.githubusercontent.com/u/21989234?s=200&v=4",
-  initialBalance: conf.validators.balance,
-});
 
 export const mkEconomyPath = (dir: string) =>
   path.join(dir, "economy-unencrypted.yaml");
@@ -42,16 +32,23 @@ export async function genEconomy(dir: string) {
     conf.validators.count,
     conf.validators.balance
   );
+
+  const pinners = Array.from({ length: Number(conf.validators.count) }).map((x, n) => {
+    return { account: genAccount(), owner: validators[n].account.addr };
+  });
+
   const treasury: Economy["treasury"] = {
     account: genAccount(),
     initialBalance: conf.treasuryInitBalance,
   };
+
   const economy: Economy = {
     treasury,
     validators,
-    aeBRIAccount: conf.aeBRIAccount ? mkDefaultBri(conf) : undefined,
+    pinners,
     faucet: { initialBalance: conf.validators.balance, account: genAccount() },
   };
+
   const filePath = mkEconomyPath(dir);
   writeYamlFile(filePath, economy);
 }

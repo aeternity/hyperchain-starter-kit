@@ -89,7 +89,19 @@ export const getContractSource = async (url: string) => {
   return response.data;
 };
 
+const downloadContract = async (dir: string, sourcesPrefix: string, contractName: ContractName) => {
+  const contractFile: ContractFile = `${contractName}.aes`;
+  const sourceURL = `${sourcesPrefix}${SOURCE_DIR}${contractFile}`;
+  const source = await getContractSource(sourceURL);
+  const sourceFile = mkContractSourcePath(dir, contractName);
+  const contractsDir = contractsDirPath(dir);
+
+  ensureDir(contractsDir);
+  fs.writeFileSync(sourceFile, source);
+};
+
 export async function genContractDef(
+  dir: string,
   sourcesPrefix: string,
   contractName: ContractName,
   nonce: number,
@@ -98,22 +110,28 @@ export async function genContractDef(
   const contractAddress = encodeContractAddress(OWNER_ADDR, nonce);
   const contractFile: ContractFile = `${contractName}.aes`;
   const sourceURL = `${sourcesPrefix}${SOURCE_DIR}${contractFile}`;
-  const source = await getContractSource(sourceURL);
-  // console.log('source of ', contractFile, source)
+
+  await downloadContract(dir, sourcesPrefix, contractName);
+
+  const sourceFile = mkContractSourcePath(dir, contractName);
+
   const compiler = new CompilerHttpNode(COMPILER_URL);
-  const compiled = await compiler.compileBySourceCode(source);
+  const compiled = await compiler.compile(sourceFile);
 
   // console.log('compiled:', compiled)
   const encoder = new aecalldata.AciContractCallEncoder(compiled.aci);
 
+  // console.log("encoding: ", contractName, initCallData);
+  // console.log(JSON.stringify(compiled.aci[3], null, 4));
   const initCallDataEnc = encoder.encodeCall(
     contractName,
     "init",
     initCallData
   );
 
+  // console.log('encoded: ', initCallDataEnc)
+
   return {
-    source,
     aci: compiled.aci,
     aciStr: toJSON(compiled.aci),
     init: {
@@ -133,56 +151,48 @@ export async function genContractDef(
   };
 }
 
-export async function getContracts(init: InitConfig): Promise<ContractDef[]> {
-  const stakingValidatorContrAddr = encodeContractAddress(OWNER_ADDR, 1);
-  console.log("stakingValidatorContrAddr", stakingValidatorContrAddr);
-  const svContract = await genContractDef(
-    init.contractSourcesPrefix,
-    "StakingValidator",
-    1,
-    [OWNER_ADDR, init.globalUnstakeDelay]
-  );
-  // console.log("svContract", svContract);
-
-  const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 2);
+export async function getContracts(
+  dir: string,
+  init: InitConfig
+): Promise<ContractDef[]> {
+  const mainStakingContrAddr = encodeContractAddress(OWNER_ADDR, 1);
   console.log("mainStakingContrAddr", mainStakingContrAddr);
+  // eslint-disable-next-line prettier/prettier
   const msContract = await genContractDef(
+    dir,
     init.contractSourcesPrefix,
     "MainStaking",
-    2,
-    [
-      stakingValidatorContrAddr,
-      init.validators.validatorMinStake,
-      init.validators.validatorMinPercent,
-      init.validators.stakeMinimum,
-      init.validators.onlineDelay,
-      init.validators.stakeDelay,
-      init.validators.unstakeDelay,
-    ]
+    1,
+    [init.validators.validatorMinStake]
   );
-  // console.log(msContract);
+  // console.log("msContract", msContract);
 
-  const hcElectionContrAddr = encodeContractAddress(OWNER_ADDR, 3);
+  const hcElectionContrAddr = encodeContractAddress(OWNER_ADDR, 2);
   console.log("hcElectionContrAddr", hcElectionContrAddr);
   const hcElectionContract = await genContractDef(
+    dir,
     init.contractSourcesPrefix,
     "HCElection",
-    3,
+    2,
     [mainStakingContrAddr]
   );
-  return [svContract, msContract, hcElectionContract];
+
+  return [msContract, hcElectionContract];
 }
 
 export function writeContracts(dir: string, contracts: ContractDef[]) {
   const contractsDir = contractsDirPath(dir);
   ensureDir(contractsDir);
   contracts.forEach((c) => {
-    const sourceFile = mkContractSourcePath(dir, c.meta.name);
-    fs.writeFileSync(sourceFile, c.source);
+    // const sourceFile = mkContractSourcePath(dir, c.meta.name);
+    // fs.writeFileSync(sourceFile, c.source);
+
     const metaFile = mkContractMetaPath(dir, c.meta.name);
     writeYamlFile(metaFile, c.meta);
+
     const initFile = mkContractInitPath(dir, c.meta.name);
     writeYamlFile(initFile, c.init);
+
     const aciFile = mkContractACIPath(dir, c.meta.name);
     fs.writeFileSync(aciFile, c.aciStr);
   });
@@ -191,7 +201,11 @@ export function writeContracts(dir: string, contracts: ContractDef[]) {
 export async function retrieveContracts(dir: string) {
   const init = loadInitConf(dir);
   console.log("init conf from file", init);
-  const contracts = await getContracts(init);
+
+  //download dependancies (includes)
+  await downloadContract(dir, init.contractSourcesPrefix, "StakingValidator");
+
+  const contracts = await getContracts(dir, init);
   writeContracts(dir, contracts);
 }
 

@@ -1,7 +1,7 @@
 import { InitConfig, loadInitConf } from "./init.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
 import { ContractCall, ContractsFile, loadContract } from "./contracts.js";
-import { mkBRIValidatorCalls, mkValidatorCalls } from "./validators.js";
+import { mkValidatorCalls } from "./validators.js";
 import { Economy, mkEconomyPath } from "./economy.js";
 import aecalldata from "@aeternity/aepp-calldata";
 import path from "path";
@@ -30,9 +30,6 @@ const writeAccountsJson = (dir: string, economy: Economy, conf: InitConfig) => {
   const accounts: Record<string, bigint> = {};
   accounts[economy.treasury.account.addr] = economy.treasury.initialBalance;
   accounts[economy.faucet.account.addr] = economy.faucet.initialBalance;
-  if (economy.aeBRIAccount) {
-    accounts[economy.aeBRIAccount.pubKey] = economy.aeBRIAccount.initialBalance;
-  }
   economy.validators.forEach(
     (v) => (accounts[v.account.addr] = v.initialBalance)
   );
@@ -45,21 +42,14 @@ export async function genNodeConfig(dir: string) {
   const economy = Economy.parse(loadYamlFile(mkEconomyPath(dir)));
   writeAccountsJson(dir, economy, conf);
   const mainStaking = loadContract(dir, "MainStaking");
-  const stakingValidator = loadContract(dir, "StakingValidator");
   const hcElection = loadContract(dir, "HCElection");
   const encoder = new aecalldata.AciContractCallEncoder(mainStaking.aci);
   let calls: ContractCall[] = [];
   economy.validators.forEach((v) => {
     calls = [...calls, ...mkValidatorCalls(v, mainStaking, encoder, conf)];
   });
-  if (economy.aeBRIAccount) {
-    calls = [
-      ...calls,
-      ...mkBRIValidatorCalls(economy.aeBRIAccount, mainStaking, encoder, conf),
-    ];
-  }
   const contractsFile: ContractsFile = {
-    contracts: [stakingValidator.init, mainStaking.init, hcElection.init],
+    contracts: [mainStaking.init, hcElection.init],
     calls,
   };
   fs.writeFileSync(mkContractsJsonPath(dir, conf), toJSON(contractsFile));

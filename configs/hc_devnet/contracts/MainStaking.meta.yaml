@@ -1,2 +1,2 @@
 name: 'MainStaking'
-sourceURL: 'https://raw.githubusercontent.com/aeternity/aeternity/master/test/contracts/MainStaking.aes'
+sourceURL: 'https://raw.githubusercontent.com/aeternity/aeternity/refs/tags/v7.3.0-rc1/test/contracts/MainStaking.aes'

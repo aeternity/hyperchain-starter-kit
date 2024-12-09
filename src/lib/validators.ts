@@ -10,11 +10,11 @@ import {
   ContractDef,
   ContractName,
   mkContractCall,
+  OWNER_ADDR,
 } from "./contracts.js";
 import { InitConfig } from "./init.js";
 // @ts-ignore
 import aecalldata from "@aeternity/aepp-calldata";
-import { AeBriAccount } from "./economy";
 
 const genValidatorName = ({ seed }: { seed?: number | string }) =>
   uniqueNamesGenerator({
@@ -65,7 +65,17 @@ export function mkValidatorCalls(
   const contract_pubkey = contract.init.pubkey;
   const caller = v.account.addr;
   const common = { caller, contract_pubkey, amount: 0n };
-  const newValidatorData = encoder.encodeCall(ct_name, "new_validator", []);
+
+  const newValidatorData = encoder.encodeCall(
+    ct_name,
+    "new_validator",
+    [
+      v.account.addr,
+      v.account.addr,
+      false
+    ]
+  );
+
   console.log("newValidatorData", newValidatorData);
   const nvCall = mkContractCall({
     ...common,
@@ -74,85 +84,5 @@ export function mkValidatorCalls(
     amount: conf.validators.validatorMinStake,
   });
 
-  const setOnlineData = encoder.encodeCall(ct_name, "set_online", []);
-  console.log("onlineCallData", setOnlineData);
-  const onlineCall = mkContractCall({
-    ...common,
-    call_data: setOnlineData,
-    nonce: 2n,
-  });
-
-  const setNameData = encoder.encodeCall(ct_name, "set_validator_name", [v.name]);
-  console.log("setNameData", setNameData);
-  const setNameCall = mkContractCall({
-    ...common,
-    call_data: setNameData,
-    nonce: 3n,
-  });
-
-  const calls = [nvCall, onlineCall, setNameCall];
-  let nonce = 3n;
-
-  if (v.description) {
-    const setDescData = encoder.encodeCall(ct_name, "set_validator_description", [
-      v.description,
-    ]);
-    console.log("setDescriptionData", setDescData);
-    calls.push(
-      mkContractCall({
-        ...common,
-        call_data: setDescData,
-        nonce: ++nonce,
-      })
-    );
-  }
-
-  if (v.avatar_url) {
-    const setAvatarData = encoder.encodeCall(ct_name, "set_validator_avatar_url", [
-      v.avatar_url,
-    ]);
-    console.log("setAvatarUrlData", setAvatarData);
-    calls.push(
-      mkContractCall({ ...common, call_data: setAvatarData, nonce: ++nonce })
-    );
-  }
-
-  return calls;
-}
-
-export function mkBRIValidatorCalls(
-  bri: AeBriAccount,
-  contract: ContractDef,
-  encoder: aecalldata.AciContractCallEncoder,
-  conf: InitConfig
-): ContractCall[] {
-  const ct_name: ContractName = "MainStaking";
-  const contract_pubkey = contract.init.pubkey;
-  const common = { caller: bri.pubKey, contract_pubkey, amount: 0n };
-  const newValidatorData = encoder.encodeCall(ct_name, "new_validator", []);
-  console.log("newValidatorData", newValidatorData);
-  const nvCall = mkContractCall({
-    ...common,
-    call_data: newValidatorData,
-    nonce: 1n,
-    amount: conf.validators.validatorMinStake,
-  });
-
-  const setNameData = encoder.encodeCall(ct_name, "set_validator_name", [bri.name]);
-  const setNameCall = mkContractCall({
-    ...common,
-    call_data: setNameData,
-    nonce: 2n,
-  });
-  const setAvatarData = encoder.encodeCall(ct_name, "set_validator_avatar_url", [
-    bri.avatar_url,
-  ]);
-  console.log("setAvatarUrlData", setAvatarData);
-
-  const setAvatarCall = mkContractCall({
-    ...common,
-    call_data: setAvatarData,
-    nonce: 3n,
-  });
-  return [nvCall, setNameCall, setAvatarCall];
+  return [nvCall];
 }

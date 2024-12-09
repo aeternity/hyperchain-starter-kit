@@ -12,8 +12,9 @@ export const InitConfig = z.object({
   globalUnstakeDelay: z.bigint(),
   childBlockTime: z.bigint(),
   childEpochLength: z.bigint(),
-  treasuryInitBalance: z.bigint(),
-  aeBRIAccount: z.optional(AccountPubKey),
+  pinningReward: z.bigint(),
+  fixedCoinbase: z.bigint(),
+  enablePinning: z.boolean(),
   parentChain: z.object({
     type: z.literal("AE2AE"),
     networkId: z.string(),
@@ -44,6 +45,9 @@ export const defaultInitConf = (networkId: string): InitConfig => {
     // in case of 180s block time of AE and 3s block time of the child chain
     // 180s * 10 = 1800/3 = 600
     childEpochLength: 600n,
+    pinningReward: BigInt(toAettos(1000)),
+    fixedCoinbase: BigInt(toAettos(100)),
+    enablePinning: true,
     parentChain: {
       type: "AE2AE",
       networkId: "ae_uat",

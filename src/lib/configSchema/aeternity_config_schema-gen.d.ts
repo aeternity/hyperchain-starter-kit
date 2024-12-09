@@ -1265,13 +1265,25 @@ export interface AeternityConfigSchema {
            */
           genesis_start_time?: number;
           /**
-           * The time in milliseconds to produce a child block
+           * The average time in milliseconds between two key blocks on the child chain
            */
           child_block_time?: number;
+          /**
+           * The time in milliseconds to produce a child block
+           */
+          child_block_production_time?: number;
           /**
            * The number of blocks in an epoch on the child chain
            */
           child_epoch_length?: number;
+          /**
+           * The initial value of the Pinning reward. It can later be changed through consensus
+           */
+          pinning_reward_value?: number;
+          /**
+           * The coinbase reward specifies the fixed amount of newly minted tokens allocated to block producers as an incentive for validating and adding blocks to the chain.
+           */
+          fixed_coinbase?: number;
           /**
            * Details of how this node will connect to a parent chain if this is a hyperchain.
            */
@@ -1343,6 +1355,28 @@ export interface AeternityConfigSchema {
                * Private key
                */
               priv?: string;
+            };
+          }[];
+          /**
+           * List of parent chain accounts
+           */
+          pinners?: {
+            /**
+             * Parent chain pinning account
+             */
+            parent_chain_account?: {
+              /**
+               * Public key
+               */
+              pub?: string;
+              /**
+               * Private key
+               */
+              priv?: string;
+              /**
+               * Public key of Hyperchain account owner
+               */
+              owner?: string;
             };
           }[];
           [k: string]: unknown;

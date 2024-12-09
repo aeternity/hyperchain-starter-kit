@@ -17,6 +17,9 @@ const Consensus = z
         staking_contract: ContractAddr,
         election_contract: ContractAddr,
         rewards_contract: ContractAddr,
+        pinning_reward_value: z.bigint(),
+        fixed_coinbase: z.bigint(),
+        default_pinning_behavior: z.boolean(),
         stakers: z.array(
           z.object({ priv: z.string(), pub: AccountPubKey }).strict()
         ),
@@ -52,7 +55,6 @@ const AeternityConfig = z
       persist: z.literal(true),
       db_direct_access: z.literal(true),
       hard_forks: z.object({ "6": z.literal(0n) }),
-      protocol_beneficiaries_enabled: z.boolean(),
       consensus: z
         .object({
           "0": Consensus,
@@ -109,7 +111,6 @@ export function genAeternityConf(
       persist: true,
       db_direct_access: true,
       hard_forks: { 6: 0 },
-      protocol_beneficiaries_enabled: !!conf.aeBRIAccount,
       consensus: {
         "0": {
           type: "hyperchain",
@@ -120,6 +121,9 @@ export function genAeternityConf(
             rewards_contract: mainStaking.init.pubkey,
             child_block_time: conf.childBlockTime,
             child_epoch_length: conf.childEpochLength,
+            pinning_reward_value: conf.pinningReward,
+            fixed_coinbase: conf.fixedCoinbase,
+            default_pinning_behavior: conf.enablePinning,
             parent_chain: {
               parent_epoch_length: conf.parentChain.epochLength,
               start_height: calcStartHeight(startHeight),
@@ -137,6 +141,15 @@ export function genAeternityConf(
                 hyper_chain_account: {
                   pub: v.account.addr,
                   priv: v.account.privKey,
+                },
+              })
+            ),
+            pinners: economy.pinners.map(
+              (p): TStaker => ({
+                parent_chain_account: {
+                  pub: p.account.addr,
+                  priv: p.account.privKey,
+                  owner: p.owner,
                 },
               })
             ),
