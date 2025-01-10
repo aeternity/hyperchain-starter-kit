@@ -26,9 +26,6 @@ const genValidatorName = ({ seed }: { seed?: number | string }) =>
   });
 
 export const Validator = z.object({
-  name: z.string(),
-  description: z.union([z.string(), z.null()]),
-  avatar_url: z.union([z.string(), z.null()]),
   account: AccountWithSecrets,
   initialBalance: z.bigint(),
 });
@@ -42,9 +39,6 @@ function genValidator({
   initialBalance: bigint;
 }): Validator {
   return {
-    name: genValidatorName({ seed: nameSeed }),
-    description: null,
-    avatar_url: null,
     account: genAccount(),
     initialBalance,
   };
