@@ -22,7 +22,7 @@ export type ContractAddr = z.infer<typeof ContractAddr>;
 
 export const AccountWithSecrets = z.object({
   mnemonic: z.string(),
-  index: z.bigint(),
+  index: z.number(),
   privKey: z.string(),
   addr: AccountPubKey,
 });
@@ -79,7 +79,7 @@ export function genAccount(): AccountWithSecrets {
   return getAccount(mnemonic);
 }
 
-export function getAccount(mnemonic: string, accountIndex: bigint = 0): AccountWithSecrets {
+export function getAccount(mnemonic: string, accountIndex: number = 0): AccountWithSecrets {
   const seed = mnemonicToSeedSync(mnemonic);
   const masterKey = deriveKey(seed, ED25519_CURVE);
   const walletKey = derivePathFromKey(masterKey, [44, 457]);

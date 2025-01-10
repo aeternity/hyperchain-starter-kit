@@ -23,6 +23,13 @@ const Consensus = z
         stakers: z.array(
           z.object({ priv: z.string(), pub: AccountPubKey }).strict()
         ),
+        pinners: z.array(
+          z.object({
+            priv: z.string(),
+            pub: AccountPubKey,
+            owner: AccountPubKey,
+          }).strict()
+        ),
         parent_chain: z
           .object({
             parent_epoch_length: z.bigint(),
@@ -72,13 +79,18 @@ const staker = z.object({
   hyper_chain_account: z.object({
     pub: z.string().optional(),
     priv: z.string().optional(),
-  }),
-  parent_chain_account: z.object({
-    pub: z.string().optional(),
-    priv: z.string().optional(),
-  }),
+  })
 });
 type TStaker = z.infer<typeof staker>;
+
+const pinner = z.object({
+  parent_chain_account: z.object({
+    pub: z.string(),
+    priv: z.string(),
+    owner: z.string(),
+  }),
+});
+type TPinner = z.infer<typeof pinner>;
 
 export function parseAeternityConf(path: string) {
   console.log("blah");
@@ -119,13 +131,13 @@ export function genAeternityConf(
             staking_contract: mainStaking.init.pubkey,
             election_contract: hcElection.init.pubkey,
             rewards_contract: mainStaking.init.pubkey,
-            child_block_time: conf.childBlockTime,
-            child_epoch_length: conf.childEpochLength,
-            pinning_reward_value: conf.pinningReward,
-            fixed_coinbase: conf.fixedCoinbase,
+            child_block_time: Number(conf.childBlockTime),
+            child_epoch_length: Number(conf.childEpochLength),
+            pinning_reward_value: Number(conf.pinningReward),
+            fixed_coinbase: Number(conf.fixedCoinbase),
             default_pinning_behavior: conf.enablePinning,
             parent_chain: {
-              parent_epoch_length: conf.parentChain.epochLength,
+              parent_epoch_length: Number(conf.parentChain.epochLength),
               start_height: calcStartHeight(startHeight),
               consensus: {
                 network_id: conf.parentChain.networkId,
@@ -145,7 +157,7 @@ export function genAeternityConf(
               })
             ),
             pinners: economy.pinners.map(
-              (p): TStaker => ({
+              (p): TPinner => ({
                 parent_chain_account: {
                   pub: p.account.addr,
                   priv: p.account.privKey,
