@@ -134,7 +134,6 @@ export async function genContractDef(
   return {
     aci: compiled.aci,
     aciStr: toJSON(compiled.aci),
-    source: "",
     init: {
       abi_version: 3n,
       vm_version: 8n,
