@@ -200,7 +200,8 @@ export function writeContracts(dir: string, contracts: ContractDef[]) {
 
 export async function retrieveContracts(dir: string) {
   const init = loadInitConf(dir);
-  console.log("init conf from file", init);
+  console.log("Configuration:");
+  console.log(init);
 
   //download dependancies (includes)
   await downloadContract(dir, init.contractSourcesPrefix, "StakingValidator");

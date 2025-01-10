@@ -19,7 +19,10 @@ export const Economy = z.object({
       owner: z.string(),
     })
   ),
-  faucet: z.object({ initialBalance: z.bigint(), account: AccountWithSecrets }),
+  faucet: z.object({
+    account: AccountWithSecrets,
+    initialBalance: z.bigint(),
+  }),
 });
 export type Economy = z.infer<typeof Economy>;
 
@@ -42,11 +45,16 @@ export async function genEconomy(dir: string) {
     initialBalance: conf.treasuryInitBalance,
   };
 
+  const faucet: Economy["faucet"] = {
+    account: genAccount(),
+    initialBalance: conf.faucetInitBalance,
+  };
+
   const economy: Economy = {
     treasury,
     validators,
     pinners,
-    faucet: { initialBalance: conf.validators.balance, account: genAccount() },
+    faucet,
   };
 
   const filePath = mkEconomyPath(dir);

@@ -3,13 +3,11 @@ import fs from "fs";
 import path from "path";
 import { ensureDir } from "./utils.js";
 import { loadYamlFile, writeYamlFile } from "./yamlExtend.js";
-import { AccountPubKey } from "./basicTypes.js";
 import { toAettos } from "@aeternity/aepp-sdk";
 import { getParentNodeURL } from "./aeParent.js";
 
 export const InitConfig = z.object({
   networkId: z.string(),
-  globalUnstakeDelay: z.bigint(),
   childBlockTime: z.bigint(),
   childEpochLength: z.bigint(),
   pinningReward: z.bigint(),
@@ -27,11 +25,10 @@ export const InitConfig = z.object({
     validatorMinStake: z.bigint(),
     validatorMinPercent: z.bigint(),
     stakeMinimum: z.bigint(),
-    onlineDelay: z.bigint(),
-    stakeDelay: z.bigint(),
-    unstakeDelay: z.bigint(),
   }),
   contractSourcesPrefix: z.string(),
+  treasuryInitBalance: z.bigint(),
+  faucetInitBalance: z.bigint(),
 });
 
 export type InitConfig = z.infer<typeof InitConfig>;
@@ -39,7 +36,6 @@ export type InitConfig = z.infer<typeof InitConfig>;
 export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
-    globalUnstakeDelay: 0n,
     childBlockTime: 3000n,
     // should be ~10 parent blocks in child blocks
     // in case of 180s block time of AE and 3s block time of the child chain
@@ -60,11 +56,9 @@ export const defaultInitConf = (networkId: string): InitConfig => {
       validatorMinStake: BigInt(toAettos(1_000_000)),
       validatorMinPercent: 33n,
       stakeMinimum: BigInt(toAettos("1")),
-      onlineDelay: 0n,
-      stakeDelay: 0n,
-      unstakeDelay: 0n,
     },
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
+    faucetInitBalance: 1000000000000000000000000000n,
     contractSourcesPrefix:
       "https://raw.githubusercontent.com/aeternity/aeternity/master/",
   };
