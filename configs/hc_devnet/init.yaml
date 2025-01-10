@@ -11,10 +11,6 @@ treasuryInitBalance: 1000000000000000000000000000000000000000000000000
 validators:
   balance: 3100000000000000000000000000
   count: 3
-  stakeDelay: 0
-  stakeMinimum: 1000000000000000000
-  unstakeDelay: 0
-  validatorMinPercent: 33
   validatorMinStake: 1000000000000000000000000
 enablePinning: true
 pinningReward: 1000
