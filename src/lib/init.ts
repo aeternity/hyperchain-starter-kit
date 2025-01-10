@@ -56,7 +56,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
     treasuryInitBalance: 1000000000000000000000000000000000000000000000000n,
     faucetInitBalance: 1000000000000000000000000000n,
     contractSourcesPrefix:
-      "https://raw.githubusercontent.com/aeternity/aeternity/master/",
+      "https://raw.githubusercontent.com/aeternity/aeternity/refs/tags/v7.3.0-rc2/",
   };
 };
 
