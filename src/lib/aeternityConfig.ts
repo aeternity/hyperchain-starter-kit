@@ -45,15 +45,10 @@ const Consensus = z
 const AeternityConfig = z
   .object({
     fork_management: z.object({ network_id: z.string() }),
-    include_default_peers: z.literal(false),
-    peers: z.array(z.never()),
     mining: z.object({
       autostart: z.literal(true),
-      beneficiary: AccountPubKey,
     }),
     chain: z.object({
-      persist: z.literal(true),
-      db_direct_access: z.literal(true),
       hard_forks: z.object({ "6": z.literal(0n) }),
       consensus: z
         .object({
@@ -81,7 +76,6 @@ const staker = z.object({
 type TStaker = z.infer<typeof staker>;
 
 export function parseAeternityConf(path: string) {
-  console.log("blah");
   const js = loadJsonFile(path);
   const ac = AeternityConfig.parse(js, {});
   console.log("aeternity config", ac);
@@ -104,12 +98,8 @@ export function genAeternityConf(
 ): AeternityConfigSchemaZ {
   return {
     fork_management: { network_id: conf.networkId },
-    mining: { beneficiary: economy.treasury.account.addr, autostart: true },
-    peers: [],
-    include_default_peers: false,
+    mining: { autostart: true },
     chain: {
-      persist: true,
-      db_direct_access: true,
       hard_forks: { 6: 0 },
       consensus: {
         "0": {
@@ -155,11 +145,6 @@ export function genAeternityConf(
             ),
           },
         },
-      },
-    },
-    http: {
-      endpoints: {
-        "dry-run": true,
       },
     },
   };
