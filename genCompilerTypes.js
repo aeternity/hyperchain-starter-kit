@@ -17,5 +17,3 @@ fs.writeFile("src/lib/compilerApi.ts", output, (err) => {
     console.log("ERROR:", err);
   }
 });
-
-// console.log(output);

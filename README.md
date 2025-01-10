@@ -23,28 +23,14 @@ This project aims at automating what is possible/easy to automate and documentin
 The documentation (and the project) consists of two parts:
 1. Generating and configuring the economy of the hyperchain. This means the initial accounts with their initial balances. 
 If you do that, you will be able to run (manually) the hyperchain on your local machine or even on a server.
-2. Setting up the actual environment that will allow you to run the blockchain in a semi-production environment plus 
-all the accessory services.
-For this, we will be using Docker and Kubernetes.
-If you follow this part of the guide, you should be able to reach a point which is good enough to be what is usually
-called a "testnet".
 
 ## Non-goals
 - We do not aim to teach you all the concepts behind hyperchains, aeternity or blockhains in general. Please read the
 relevant documentation if you want to learn more about those.
-- This is not a Docker/Kubernetes tutorial, although the provided instructions should be enough to get you started,
-some K8s experience is recommended.
-- This is not a guide on how to run a production-ready, resilient and scaled up blockchain network.
-For this, you would need to be a DevOps/Kubernetes expert.
-But this guide can help you get started in this direction.
-And you can certainly use the provided components (like helm charts) to achieve this if you know what you are doing.
 
 ## Prerequisites/assumptions
 - You have a somewhat solid understanding of how blockchains work and [æternity](https://github.com/aeternity/aeternity) in particular.
 - You are comfortable with the command line, you are a semi-competent unix administrator.
-- You either have access to a working [Kubernetes](https://kubernetes.io/) cluster, or you are willing to set one up yourself.
-We will provide short instructions on how to do that, but this is not the main focus of this guide.
-- You will probably need to have a registered domain name if you want to run the network publicly.
 
 ## Concepts and terminology
 - **Hyperchain**: A blockchain that is running on [æternity](https://github.com/aeternity/aeternity) software. It is a separate blockchain that has a different
@@ -67,9 +53,6 @@ has their private keys. A node can also not run validators, and then it's a non-
 - **Staker** or **Delegator**: An account on our hyperchain that stakes tokens with a validator to increase their
 voting power (and thus their chance of being selected to sign a block). It is expected that the validator rewards its 
 stakers by sharing the block rewards with them.
-- **BRI** and **BRI account**: Block Reward Initiative.
-This is a mechanism that sends a part of the rewards to the Aeternity Crypto Foundation.
-You can disable or configure this for your blockchain.
 - **Genesis block**: The first block of the blockchain, containing the initial accounts and tokens (as their balances).
 We will be configuring this in order to bootstrap our hyperchain, and this is the main focus of part 1 of this guide.
 - **Faucet**: An account and [faucet service](https://github.com/aeternity/aepp-faucet-nodejs) that is used to distribute tokens to users. This is usually done for free and is
