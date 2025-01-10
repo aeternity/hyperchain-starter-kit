@@ -1,0 +1,18 @@
+childBlockTime: 3000
+childEpochLength: 600
+contractSourcesPrefix: 'https://raw.githubusercontent.com/aeternity/aeternity/refs/tags/v7.3.0-rc2/'
+enablePinning: true
+faucetInitBalance: 1000000000000000000000000000
+fixedCoinbase: 100000000000000000000
+networkId: 'hc_test'
+parentChain:
+  epochLength: 10
+  networkId: 'ae_uat'
+  nodeURL: 'https://testnet.aeternity.io'
+  type: 'AE2AE'
+pinningReward: 1000000000000000000000
+treasuryInitBalance: 1000000000000000000000000000000000000000000000000
+validators:
+  balance: 3100000000000000000000000000
+  count: 3
+  validatorMinStake: 1000000000000000000000000

@@ -1,0 +1,792 @@
+[
+  {
+    "namespace": {
+      "name": "ListInternal",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "List",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "Pair",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "Option",
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            },
+            {
+              "name": "_2",
+              "type": "int"
+            },
+            {
+              "name": "_3",
+              "type": "bool"
+            }
+          ],
+          "name": "reward_cb",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_interface",
+      "name": "RewardCallbackI",
+      "payable": false,
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [],
+          "name": "deposit",
+          "payable": true,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "stake",
+          "payable": true,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            }
+          ],
+          "name": "adjust_stake",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            }
+          ],
+          "name": "withdraw",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "bool"
+            }
+          ],
+          "name": "set_restake",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_restake",
+          "payable": false,
+          "returns": "bool",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            }
+          ],
+          "name": "get_staked_amount",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_available_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_total_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_epoch",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "RewardCallbackI"
+            }
+          ],
+          "name": "register_reward_callback",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_interface",
+      "name": "MainStakingI",
+      "payable": false,
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "main_staking_ct",
+              "type": "MainStakingI"
+            },
+            {
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "name": "signing_key",
+              "type": "address"
+            }
+          ],
+          "name": "init",
+          "payable": false,
+          "returns": "StakingValidator.state",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "deposit",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "stake",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "adjust_amount",
+              "type": "int"
+            }
+          ],
+          "name": "adjust_stake",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "amount",
+              "type": "int"
+            }
+          ],
+          "name": "withdraw",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "restake",
+              "type": "bool"
+            }
+          ],
+          "name": "set_restake",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_restake",
+          "payable": false,
+          "returns": "bool",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            }
+          ],
+          "name": "get_staked_amount",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_available_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_total_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "cb_ct",
+              "type": "RewardCallbackI"
+            }
+          ],
+          "name": "register_reward_callback",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            },
+            {
+              "name": "amount",
+              "type": "int"
+            },
+            {
+              "name": "restaked",
+              "type": "bool"
+            }
+          ],
+          "name": "rewards",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "has_reward_callback",
+          "payable": false,
+          "returns": "bool",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_epoch",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_child",
+      "name": "StakingValidator",
+      "payable": true,
+      "state": {
+        "record": [
+          {
+            "name": "main_staking_ct",
+            "type": "MainStakingI"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "signing_key",
+            "type": "address"
+          },
+          {
+            "name": "reward_callback",
+            "type": {
+              "option": [
+                "RewardCallbackI"
+              ]
+            }
+          }
+        ]
+      },
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            },
+            {
+              "name": "_2",
+              "type": "int"
+            },
+            {
+              "name": "_3",
+              "type": "bool"
+            }
+          ],
+          "name": "rewards",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_interface",
+      "name": "StakingValidatorI",
+      "payable": false,
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "validator_min_stake",
+              "type": "int"
+            }
+          ],
+          "name": "init",
+          "payable": false,
+          "returns": "MainStaking.state",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "name": "sign_key",
+              "type": "address"
+            },
+            {
+              "name": "restake",
+              "type": "bool"
+            }
+          ],
+          "name": "new_validator",
+          "payable": true,
+          "returns": "StakingValidator",
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "deposit",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "stake",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "amount",
+              "type": "int"
+            }
+          ],
+          "name": "adjust_stake",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "amount",
+              "type": "int"
+            }
+          ],
+          "name": "withdraw",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "restake",
+              "type": "bool"
+            }
+          ],
+          "name": "set_restake",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "get_restake",
+          "payable": false,
+          "returns": "bool",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            }
+          ],
+          "name": "get_staked_amount",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "validator",
+              "type": "address"
+            }
+          ],
+          "name": "get_current_stake_",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_available_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "validator",
+              "type": "address"
+            }
+          ],
+          "name": "get_available_balance_",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_total_balance",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "v",
+              "type": "address"
+            }
+          ],
+          "name": "get_total_balance_",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            },
+            {
+              "name": "rewards",
+              "type": {
+                "list": [
+                  {
+                    "tuple": [
+                      "address",
+                      "int"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "add_rewards",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            }
+          ],
+          "name": "lock_stake",
+          "payable": false,
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "sorted_validators",
+          "payable": false,
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "staking_power",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "get_validator_state",
+          "payable": false,
+          "returns": "MainStaking.validator",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "get_validator_contract",
+          "payable": false,
+          "returns": "StakingValidator",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_current_epoch",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_main",
+      "name": "MainStaking",
+      "payable": false,
+      "state": {
+        "record": [
+          {
+            "name": "validators",
+            "type": {
+              "map": [
+                "address",
+                "MainStaking.validator"
+              ]
+            }
+          },
+          {
+            "name": "owners",
+            "type": {
+              "map": [
+                "address",
+                "address"
+              ]
+            }
+          },
+          {
+            "name": "sign_keys",
+            "type": {
+              "map": [
+                "address",
+                "address"
+              ]
+            }
+          },
+          {
+            "name": "validator_min_stake",
+            "type": "int"
+          },
+          {
+            "name": "current_epoch",
+            "type": "int"
+          }
+        ]
+      },
+      "typedefs": [
+        {
+          "name": "validator",
+          "typedef": {
+            "record": [
+              {
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "name": "sign_key",
+                "type": "address"
+              },
+              {
+                "name": "total_balance",
+                "type": "int"
+              },
+              {
+                "name": "current_stake",
+                "type": "int"
+              },
+              {
+                "name": "staked",
+                "type": {
+                  "map": [
+                    "int",
+                    "int"
+                  ]
+                }
+              },
+              {
+                "name": "restake",
+                "type": "bool"
+              }
+            ]
+          },
+          "vars": []
+        }
+      ]
+    }
+  }
+]

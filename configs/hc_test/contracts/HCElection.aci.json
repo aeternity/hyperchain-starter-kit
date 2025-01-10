@@ -1,0 +1,587 @@
+[
+  {
+    "namespace": {
+      "name": "ListInternal",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "List",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "Pair",
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [],
+          "name": "sorted_validators",
+          "payable": false,
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            }
+          ],
+          "name": "lock_stake",
+          "payable": false,
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            },
+            {
+              "name": "_2",
+              "type": {
+                "list": [
+                  {
+                    "tuple": [
+                      "address",
+                      "int"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "add_rewards",
+          "payable": false,
+          "returns": "unit",
+          "stateful": false
+        }
+      ],
+      "kind": "contract_interface",
+      "name": "MainStaking",
+      "payable": false,
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "main_staking_ct",
+              "type": "MainStaking"
+            }
+          ],
+          "name": "init",
+          "payable": false,
+          "returns": "HCElection.state",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch_length",
+              "type": "int"
+            },
+            {
+              "name": "base_pin_reward",
+              "type": "int"
+            }
+          ],
+          "name": "init_epochs",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "leader",
+              "type": "address"
+            }
+          ],
+          "name": "step",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "leader",
+              "type": "address"
+            }
+          ],
+          "name": "step_micro",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "leader",
+              "type": "address"
+            },
+            {
+              "name": "seed",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "epoch_adjust",
+              "type": "int"
+            },
+            {
+              "name": "next_base_pin_reward",
+              "type": "int"
+            },
+            {
+              "name": "carry_over_flag",
+              "type": "bool"
+            }
+          ],
+          "name": "step_eoe",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "proof",
+              "type": {
+                "bytes": "any"
+              }
+            }
+          ],
+          "name": "pin",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "name": "add_reward",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch_number",
+              "type": "int"
+            },
+            {
+              "name": "fork",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "epoch_length",
+              "type": "int"
+            },
+            {
+              "name": "pc_hash",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "producer",
+              "type": "address"
+            },
+            {
+              "name": "votes",
+              "type": {
+                "list": [
+                  "HCElection.vote"
+                ]
+              }
+            }
+          ],
+          "name": "finalize_epoch",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "leader",
+          "payable": false,
+          "returns": "address",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "epoch",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "epoch_length",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "epoch_info",
+          "payable": false,
+          "returns": {
+            "tuple": [
+              "int",
+              "HCElection.epoch_info"
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch",
+              "type": "int"
+            }
+          ],
+          "name": "epoch_info_epoch",
+          "payable": false,
+          "returns": "HCElection.epoch_info",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "staking_contract",
+          "payable": false,
+          "returns": "MainStaking",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "seed",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "validators",
+              "type": {
+                "list": [
+                  {
+                    "tuple": [
+                      "address",
+                      "int"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "length",
+              "type": "int"
+            }
+          ],
+          "name": "validator_schedule",
+          "payable": false,
+          "returns": {
+            "list": [
+              "address"
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "pin_info",
+          "payable": false,
+          "returns": {
+            "option": [
+              {
+                "bytes": "any"
+              }
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "pin_reward_info",
+          "payable": false,
+          "returns": "HCElection.pin_reward_info",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "finalize_info",
+          "payable": false,
+          "returns": {
+            "option": [
+              {
+                "HCElection.finalize_info": []
+              }
+            ]
+          },
+          "stateful": false
+        }
+      ],
+      "kind": "contract_main",
+      "name": "HCElection",
+      "payable": false,
+      "state": {
+        "record": [
+          {
+            "name": "main_staking_ct",
+            "type": "MainStaking"
+          },
+          {
+            "name": "leader",
+            "type": "address"
+          },
+          {
+            "name": "rewards",
+            "type": {
+              "map": [
+                "int",
+                {
+                  "list": [
+                    {
+                      "tuple": [
+                        "address",
+                        "int"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "epoch",
+            "type": "int"
+          },
+          {
+            "name": "epochs",
+            "type": {
+              "map": [
+                "int",
+                "HCElection.epoch_info"
+              ]
+            }
+          },
+          {
+            "name": "pin",
+            "type": {
+              "option": [
+                {
+                  "bytes": "any"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pin_reward",
+            "type": "HCElection.pin_reward_info"
+          },
+          {
+            "name": "finalize",
+            "type": {
+              "option": [
+                {
+                  "HCElection.finalize_info": []
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "typedefs": [
+        {
+          "name": "epoch_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "start",
+                "type": "int"
+              },
+              {
+                "name": "length",
+                "type": "int"
+              },
+              {
+                "name": "seed",
+                "type": {
+                  "option": [
+                    {
+                      "bytes": "any"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "staking_distribution",
+                "type": {
+                  "option": [
+                    {
+                      "list": [
+                        {
+                          "tuple": [
+                            "address",
+                            "int"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "pin_reward_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "base",
+                "type": "int"
+              },
+              {
+                "name": "current",
+                "type": "int"
+              },
+              {
+                "name": "carry_over",
+                "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "vote",
+          "typedef": {
+            "record": [
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "hash",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "epoch_delta",
+                "type": "int"
+              },
+              {
+                "name": "signature",
+                "type": {
+                  "bytes": "any"
+                }
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "finalize_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "epoch",
+                "type": "int"
+              },
+              {
+                "name": "fork",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "epoch_length",
+                "type": "int"
+              },
+              {
+                "name": "pc_hash",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "votes",
+                "type": {
+                  "list": [
+                    "HCElection.vote"
+                  ]
+                }
+              }
+            ]
+          },
+          "vars": []
+        }
+      ]
+    }
+  }
+]

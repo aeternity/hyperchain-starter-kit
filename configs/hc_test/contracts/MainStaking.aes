@@ -1,0 +1,227 @@
+include "List.aes"
+include "Pair.aes"
+include "StakingValidator.aes"
+
+contract interface StakingValidatorI =
+  entrypoint rewards : (int, int, bool) => unit
+
+main contract MainStaking =
+  record validator =
+    { owner         : address,
+      sign_key      : address,
+      total_balance : int,
+      current_stake : int,
+      staked        : map(int, int),
+      restake       : bool
+    }
+
+  record state =
+    { validators          : map(address, validator),
+      owners              : map(address, address),
+      sign_keys           : map(address, address),
+      validator_min_stake : int,
+      current_epoch       : int
+    }
+
+  entrypoint init(validator_min_stake : int) =
+    { validators = {},
+      owners = {},
+      sign_keys = {},
+      validator_min_stake = validator_min_stake,
+      // The first block is part of epoch 1
+      current_epoch = 1 }
+
+  payable stateful entrypoint new_validator(owner : address, sign_key : address, restake : bool) : StakingValidator =
+    require(Call.value >= state.validator_min_stake, "A new validator must stake the minimum amount")
+    require(!Map.member(owner, state.owners), "Owner must be unique")
+    require(!Map.member(sign_key, state.sign_keys), "Sign key must be unique")
+    let validator_ct = Chain.create(Address.to_contract(Contract.address), owner, sign_key) : StakingValidator
+    let v_addr = validator_ct.address
+    put(state{validators[v_addr] = {owner = owner, sign_key = sign_key,
+                                    total_balance = 0, current_stake = 0,
+                                    staked = {}, restake = restake},
+              owners[owner] = v_addr,
+              sign_keys[sign_key] = v_addr})
+    stake_(v_addr, Call.value)
+    validator_ct
+
+  // ------------------------------------------------------------------------
+  // -- StakingValidator API
+  // ------------------------------------------------------------------------
+  payable stateful entrypoint deposit() =
+    require(Call.value > 0, "Deposit needs a positive value")
+    assert_validator(Call.caller)
+    deposit_(Call.caller, Call.value)
+
+  payable stateful entrypoint stake() =
+    require(Call.value > 0, "Stake needs a positive value")
+    assert_validator(Call.caller)
+    stake_(Call.caller, Call.value)
+
+  stateful entrypoint adjust_stake(amount : int) =
+    assert_validator(Call.caller)
+    adjust_stake_(Call.caller, amount)
+
+  stateful entrypoint withdraw(amount) =
+    assert_validator(Call.caller)
+    let available = get_available_balance_(Call.caller)
+    require(available >= amount, "Too large withdrawal")
+
+    withdraw_(Call.caller, amount)
+    Chain.spend(Call.caller, amount)
+
+  stateful entrypoint set_restake(restake : bool) =
+    assert_validator(Call.caller)
+    put(state{validators[Call.caller] @ v = v{restake = restake}})
+
+  entrypoint get_restake() : bool =
+    state.validators[Call.caller].restake
+
+  entrypoint get_staked_amount(epoch : int) =
+    get_staked_amount_(Call.caller, epoch)
+
+  entrypoint get_current_stake() =
+    get_current_stake_(Call.caller)
+
+  entrypoint get_current_stake_(validator : address) =
+    let v = state.validators[validator]
+    v.current_stake
+
+  entrypoint get_available_balance() =
+    get_available_balance_(Call.caller)
+
+  entrypoint get_available_balance_(validator : address) : int =
+    let v = state.validators[validator]
+    v.total_balance - locked_stake(v)
+
+  entrypoint get_total_balance() =
+    get_total_balance_(Call.caller)
+
+  entrypoint get_total_balance_(v : address) =
+    state.validators[v].total_balance
+
+  entrypoint get_validator_min_stake() =
+    state.validator_min_stake
+
+  // ------------------------------------------------------------------------
+  // -- Called from HCElection and/or consensus logic
+  // ------------------------------------------------------------------------
+  payable stateful entrypoint add_rewards(epoch : int, rewards : list(address * int)) =
+    assert_protocol_call()
+    let total_rewards = List.foldl((+), 0, List.map(Pair.snd, rewards))
+    require(total_rewards == Call.value, "Incorrect total reward given")
+    List.foreach(rewards, (r) => add_reward(epoch, r))
+    [ unlock_stake_(v_addr, validator, epoch) | (v_addr, validator) <- Map.to_list(state.validators) ]
+    // At the end of epoch X we distribute rewards for X - 1; thus current_epoch
+    // is (soon) X + 1. I.e. X - 1 + 2.
+    put(state{current_epoch = epoch + 2})
+
+  stateful entrypoint lock_stake(epoch : int) : list(address * int) =
+    assert_protocol_call()
+    [ lock_stake_(v_addr, validator, epoch) | (v_addr, validator) <- Map.to_list(state.validators) ]
+    sorted_validators()
+
+  entrypoint sorted_validators() : list(address * int) =
+    let vs = [ (sk, s) | (_, {sign_key = sk, current_stake = s}) <- Map.to_list(state.validators),
+                         if(s >= state.validator_min_stake) ]
+
+    List.sort(cmp_validator, vs)
+
+  // ------------------------------------------------------------------------
+  // -- Lookup API
+  // ------------------------------------------------------------------------
+  entrypoint staking_power(owner : address) =
+    let v = lookup_validator(owner)
+    v.current_stake
+
+  entrypoint get_validator_state(owner : address) =
+    lookup_validator(owner)
+
+  entrypoint get_validator_contract(owner : address) : StakingValidator =
+    assert_owner(owner)
+    Address.to_contract(state.owners[owner])
+
+  entrypoint get_current_epoch() =
+    state.current_epoch
+
+  // ------------------------------------------------------------------------
+  // --   Internal functions
+  // ------------------------------------------------------------------------
+  function cmp_validator((x_addr : address, x_stake : int), (y_addr : address, y_stake : int)) =
+    if (x_stake == y_stake) x_addr < y_addr else x_stake > y_stake
+
+  function lookup_validator(owner : address) =
+    assert_owner(owner)
+    state.validators[state.owners[owner]]
+
+  stateful function add_reward(epoch : int, (sign_key, amount) : address * int) =
+    assert_signer(sign_key)
+    let validator = state.sign_keys[sign_key]
+    let restake = state.validators[validator].restake
+    if(restake)
+      stake_(validator, amount)
+    else
+      deposit_(validator, amount)
+    let validator_ct = Address.to_contract(validator) : StakingValidator
+    validator_ct.rewards(epoch, amount, restake)
+
+  stateful function lock_stake_(v_addr : address, validator : validator, epoch : int) : unit =
+    if(validator.current_stake >= state.validator_min_stake)
+      put(state{validators[v_addr] = validator{staked @ s = s{[epoch] = validator.current_stake}}})
+
+  stateful function unlock_stake_(v_addr : address, validator : validator, epoch : int) : unit =
+    put(state{validators[v_addr] = validator{staked @ s = Map.delete(epoch, s)}})
+
+  stateful function deposit_(validator : address, amount : int) =
+    put(state{validators[validator] @ v = deposit_v(v, amount)})
+
+  stateful function stake_(validator : address, amount : int) =
+    put(state{validators[validator] @ v = stake_v(v, amount)})
+
+  stateful function withdraw_(validator : address, amount : int) =
+    put(state{validators[validator] @ v = withdraw_v(v, amount)})
+
+  function get_staked_amount_(validator : address, epoch : int) =
+    Map.lookup_default(epoch, state.validators[validator].staked, 0)
+
+  stateful function adjust_stake_(validator : address, amount : int) =
+    put(state{validators[validator] @ v = adjust_stake_v(v, amount)})
+
+  function deposit_v(v : validator, amount) =
+    v{total_balance @ tb = tb + amount}
+
+  function stake_v(v : validator, amount) =
+    v{total_balance @ tb = tb + amount,
+      current_stake @ cs = cs + amount}
+
+  function withdraw_v(v : validator, amount) =
+    let total_balance = v.total_balance - amount
+    v{total_balance = total_balance,
+      current_stake @ cs = min(total_balance, cs) }
+
+  function adjust_stake_v(v : validator, amount) =
+    require(v.total_balance >= v.current_stake + amount, "Too large stake")
+    require(0 =< v.current_stake + amount, "Too small stake")
+    v{current_stake @ cs = cs + amount}
+
+  function locked_stake(v : validator) =
+    let stakes = List.map(Pair.snd, Map.to_list(v.staked))
+    max(stakes)
+
+  function max(ls : list(int)) : int =
+    List.foldl((a, b) => if(a > b) a else b, 0, ls)
+
+  function min(a : int, b : int) =
+    if(a < b) a else b
+
+  function assert_validator(v : address) =
+    require(Map.member(v, state.validators), "Not a registered validator")
+
+  function assert_owner(o : address) =
+    require(Map.member(o, state.owners), "Not a registered validator owner")
+
+  function assert_signer(s : address) =
+    require(Map.member(s, state.sign_keys), "Not a registered sign key")
+
+  function assert_protocol_call() =
+    require(Call.origin == Contract.creator, "Must be called by the protocol")
