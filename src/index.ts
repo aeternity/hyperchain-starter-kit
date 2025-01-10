@@ -5,6 +5,7 @@ import { initDir } from "./lib/init.js";
 import { retrieveContracts } from "./lib/contracts.js";
 import { genEconomy } from "./lib/economy.js";
 import { genNodeConfig, updateParentHeight } from "./lib/nodeConf.js";
+import { generate } from "./lib/generate.js";
 import { parseAeternityConf } from "./lib/aeternityConfig.js";
 import { getAccount, genAccount } from "./lib/basicTypes.js";
 
@@ -22,27 +23,35 @@ async function main() {
   const prg = program.name("hyperchain-starter-kit");
   prg
     .command("init <directory>")
-    .description("Initialize a directory as a hyperchain config")
+    .description("1. Initialize a directory as a hyperchain config")
     .action(initDir);
   prg
     .command("retrieve-contracts <directory>")
     .action(retrieveContracts)
-    .description("Download and compile staking/validator/election contracts");
+    .description(
+      "2. Download and compile staking/validator/election contracts"
+    );
   prg
     .command("gen-economy <directory>")
     .action(genEconomy)
     .description(
-      "Generate a list of treasury and validator accounts priv/pub keys in economy-unencrypted.yaml"
+      "3. Generate a list of treasury and validator accounts priv/pub keys in economy-unencrypted.yaml"
     );
   prg
     .command("gen-node-conf <directory>")
     .action(genNodeConfig)
-    .description("Generate aeternity.yaml.");
+    .description(
+      "4. Generate aeternity.yaml, accounts.json and contracts.json"
+    );
+  prg
+    .command("generate <directory>")
+    .action(generate)
+    .description("All of the above at once in order");
   prg
     .command("update-parent-height <directory>")
     .action(updateParentHeight)
     .description(
-      "Update parent_chain.start_height in aeternity.yaml so that it's 2 blocks in the future of the current parent block height."
+      "Update parent_chain.start_height in aeternity.yaml to be 10 blocks ahead of current height."
     );
   prg.command("parse-aeternity-conf <file>").action(parseAeternityConf);
   prg
