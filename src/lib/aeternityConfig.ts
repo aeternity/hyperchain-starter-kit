@@ -49,7 +49,13 @@ const AeternityConfig = z
       autostart: z.literal(true),
     }),
     chain: z.object({
-      hard_forks: z.object({ "6": z.literal(0n) }),
+      hard_forks: z.object({
+        "6": z.object({
+          height: z.bigint(),
+          accounts_file: z.string(),
+          contracts_file: z.string(),
+        }),
+      }),
       consensus: z
         .object({
           "0": Consensus,
@@ -100,7 +106,13 @@ export function genAeternityConf(
     fork_management: { network_id: conf.networkId },
     mining: { autostart: true },
     chain: {
-      hard_forks: { 6: 0 },
+      hard_forks: {
+        6: {
+          height: 0,
+          accounts_file: `${conf.networkId}_accounts.json`,
+          contracts_file: `${conf.networkId}_contracts.json`,
+        },
+      },
       consensus: {
         "0": {
           type: "hyperchain",
