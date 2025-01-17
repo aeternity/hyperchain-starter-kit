@@ -134,6 +134,13 @@
         },
         {
           "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
           "name": "get_total_balance",
           "payable": false,
           "returns": "int",
@@ -156,6 +163,13 @@
           "name": "register_reward_callback",
           "payable": false,
           "returns": "unit",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
+          "payable": false,
+          "returns": "int",
           "stateful": false
         }
       ],
@@ -269,6 +283,13 @@
         },
         {
           "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
           "name": "get_available_balance",
           "payable": false,
           "returns": "int",
@@ -327,6 +348,13 @@
         {
           "arguments": [],
           "name": "get_current_epoch",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
           "payable": false,
           "returns": "int",
           "stateful": false
@@ -508,6 +536,25 @@
         },
         {
           "arguments": [],
+          "name": "get_current_stake",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "validator",
+              "type": "address"
+            }
+          ],
+          "name": "get_current_stake_",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
           "name": "get_available_balance",
           "payable": false,
           "returns": "int",
@@ -540,6 +587,13 @@
             }
           ],
           "name": "get_total_balance_",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_validator_min_stake",
           "payable": false,
           "returns": "int",
           "stateful": false

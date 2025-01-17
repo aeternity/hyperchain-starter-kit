@@ -217,6 +217,48 @@
           "stateful": true
         },
         {
+          "arguments": [
+            {
+              "name": "epoch_number",
+              "type": "int"
+            },
+            {
+              "name": "fork",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "epoch_length",
+              "type": "int"
+            },
+            {
+              "name": "pc_hash",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "producer",
+              "type": "address"
+            },
+            {
+              "name": "votes",
+              "type": {
+                "list": [
+                  "HCElection.vote"
+                ]
+              }
+            }
+          ],
+          "name": "finalize_epoch",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
           "arguments": [],
           "name": "leader",
           "payable": false,
@@ -322,6 +364,19 @@
           "payable": false,
           "returns": "HCElection.pin_reward_info",
           "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "finalize_info",
+          "payable": false,
+          "returns": {
+            "option": [
+              {
+                "HCElection.finalize_info": []
+              }
+            ]
+          },
+          "stateful": false
         }
       ],
       "kind": "contract_main",
@@ -381,6 +436,16 @@
           {
             "name": "pin_reward",
             "type": "HCElection.pin_reward_info"
+          },
+          {
+            "name": "finalize",
+            "type": {
+              "option": [
+                {
+                  "HCElection.finalize_info": []
+                }
+              ]
+            }
           }
         ]
       },
@@ -443,6 +508,74 @@
               {
                 "name": "carry_over",
                 "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "vote",
+          "typedef": {
+            "record": [
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "hash",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "epoch_delta",
+                "type": "int"
+              },
+              {
+                "name": "signature",
+                "type": {
+                  "bytes": "any"
+                }
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "finalize_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "epoch",
+                "type": "int"
+              },
+              {
+                "name": "fork",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "epoch_length",
+                "type": "int"
+              },
+              {
+                "name": "pc_hash",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "votes",
+                "type": {
+                  "list": [
+                    "HCElection.vote"
+                  ]
+                }
               }
             ]
           },
