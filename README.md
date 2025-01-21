@@ -16,18 +16,18 @@ The goal of this project is to ease the process of bootstrapping an Aeternity hy
 </details>
 
 ## Introduction
-The Hyperchains Starter Kit simplifies the process of bootstrapping an Aeternity Hyperchain node for the 0.9 beta release. While Hyperchains are designed to be lightweight and resource-efficient, the setup process involves multiple components and careful configuration. This tool automates key setup tasks including economy generation, contract deployment, and node configuration.
+The Hyperchains Starter Kit simplifies the process of bootstrapping an Aeternity Hyperchain node for the 0.9 beta release. While Hyperchains are designed to be lightweight and resource-efficient, the setup process involves multiple components and careful configuration. This tool automates key setup tasks including economy generation, and contract and node configuration.
 
 Note: This tool is currently in beta development alongside Hyperchains 0.9. While functional, you may encounter warnings or minor issues as we continue improving stability and user experience.
 
 ## Structure
 The toolkit provides automated workflows for:
-1. Generating and configuring the Hyperchain economy (initial accounts, balances, and contracts)
-2. Setting up node configuration files
-3. Deploying and initializing required smart contracts
-4. Managing validator and pinner account setup
+1. Generating Hyperchain economy configuration parameters (initial accounts and balances)
+2. Preparing contract configurations for genesis block deployment
+3. Creating validator account configurations
+4. Preparing pinning operation parameters
 
-Each component is configured through YAML files and automated scripts to minimize manual intervention while maintaining flexibility.
+Each component generates configuration output that the Aeternity node will use during initialization and genesis block creation.
 
 ## Usage
 ### Quick Start
@@ -90,7 +90,7 @@ validators:
   validatorMinStake: 1000000000000000000000000
 ```
 
-This configuration can be customized based on your requirements. See the [Hyperchains documentation](https://github.com/aeternity/aeternity/tree/master/docs) for more detailed parameter explanations.
+This configuration can be customized based on your requirements. See the [Hyperchains documentation](https://github.com/aeternity/aeternity/blob/master/docs/hyperchains.md)) for more detailed parameter explanations.
 
 ## Non-goals
 ### Project Scope
@@ -106,14 +106,13 @@ For learning these concepts, we recommend:
 - [Aeternity Forum](https://forum.aeternity.com/) for community learning resources
 
 ## Prerequisites/assumptions
-- You have a somewhat solid understanding of how blockchains work and [æternity](https://github.com/aeternity/aeternity) in particular.
-- A running Aeternity node (v6.7.0 or later)
-- Experience managing blockchain nodes
-- Access to sufficient funds for pinning operations
-- Understanding of node validator operations
-- Comfortable with command-line operations and YAML configuration
+For using this tool:
+- Basic command line familiarity
 - [Node.js](https://nodejs.org/en/download) installed
 - [Git](https://git-scm.com/downloads) installed
+
+For using the generated output:
+- An Aeternity node (v6.7.0 or later) install location where you will place the generated configurations
 
 ## Technical Requirements:
 - Minimum 4GB RAM dedicated to Hyperchain operations
