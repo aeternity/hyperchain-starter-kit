@@ -54,3 +54,7 @@ fork_management:
   network_id: 'hc_test'
 mining:
   autostart: true
+http:
+  endpoints:
+    dry-run: true
+    hyperchain: true
