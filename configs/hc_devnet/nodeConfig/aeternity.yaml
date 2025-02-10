@@ -52,5 +52,9 @@ chain:
       height: 0
 fork_management:
   network_id: 'hc_devnet'
+http:
+  endpoints:
+    dry-run: true
+    hyperchain: true
 mining:
   autostart: true
