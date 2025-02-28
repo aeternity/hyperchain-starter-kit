@@ -1,0 +1,49 @@
+peers:
+  - aenode://pp_m9KaFFTYgxQFqyW67a6bnxfciKpAR5F4pxqdZXVwVB62MqY1B@initiator:3015
+chain:
+  consensus:
+    '0':
+      config:
+        child_block_time: 3000
+        child_epoch_length: 600
+        child_block_production_time: 500
+        contract_owner: 'ak_11111111111111111111111111111115rHyByZ'
+        default_pinning_behavior: true
+        election_contract: 'ct_LRbi65kmLtE7YMkG6mvG5TxAXTsPJDZjAtsPuaXtRyPA7gnfJ'
+        fixed_coinbase: 100000000000000000000
+        parent_chain:
+          consensus:
+            network_id: 'ae_uat'
+            type: 'AE2AE'
+          parent_epoch_length: 10
+          polling:
+            fetch_interval: 500
+            nodes:
+              - 'https://testnet.aeternity.io'
+          start_height: 1064939
+        pinners:
+          - parent_chain_account:
+              owner: 'ak_2hT1UTevtPkEpocjEcbbBi14gS1Ba1unHQBrtXupHnKHxk26kU'
+              priv: '4469eb651fa54025ccecf2bfe462a2051e690f7b2bb23ea0f49e6f77a7b1763c02b7910b1a543221b15f14b196ed1ba3212031d817a9c09ac200387ab5631a25'
+              pub: 'ak_2CQQctWm267tfHMUcZf7YX5uVHE6T9t3bg4UNpWnpn8qog6MZ'
+        pinning_reward_value: 1000000000000000000000
+        rewards_contract: 'ct_KJgjAXMtRF68AbT5A2aC9fTk8PA4WFv26cFSY27fXs6FtYQHK'
+        stakers:
+          - hyper_chain_account:
+              priv: 'ade11d353b3b02f9602aa7073683a1c2b2a5d95c73b99d8fc40eafa82b02e957df8a07444f1195795a2f92915e655696a3a6a330015c58673ae9f73a1abff374'
+              pub: 'ak_2hT1UTevtPkEpocjEcbbBi14gS1Ba1unHQBrtXupHnKHxk26kU'
+        staking_contract: 'ct_KJgjAXMtRF68AbT5A2aC9fTk8PA4WFv26cFSY27fXs6FtYQHK'
+      type: 'hyperchain'
+  hard_forks:
+    '6':
+      accounts_file: 'hc_test_accounts.json'
+      contracts_file: 'hc_test_contracts.json'
+      height: 0
+fork_management:
+  network_id: 'hc_test'
+mining:
+  autostart: true
+http:
+  endpoints:
+    dry-run: true
+    hyperchain: true
