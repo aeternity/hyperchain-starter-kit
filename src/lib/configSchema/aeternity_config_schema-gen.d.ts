@@ -1281,9 +1281,17 @@ export interface AeternityConfigSchema {
            */
           pinning_reward_value?: number;
           /**
+           * Use the default pinning behavior, where in each epoch, if the last leader has defined pinning/parent chain credentials, they will pin
+           */
+          default_pinning_behavior?: boolean;
+          /**
            * The coinbase reward specifies the fixed amount of newly minted tokens allocated to block producers as an incentive for validating and adding blocks to the chain.
            */
           fixed_coinbase?: number;
+          /**
+           * The fees in a block are divided between the producer of the block, and the producer of the previous and next blocks. I.e. [30, 50, 20] would mean that the block producer gets 50% of the fees, the producer of the previous block gets 30% and the producer of the following block gets 20%.
+           */
+          fee_distribution?: number[];
           /**
            * Details of how this node will connect to a parent chain if this is a hyperchain.
            */
@@ -1378,6 +1386,37 @@ export interface AeternityConfigSchema {
                */
               owner?: string;
             };
+          }[];
+          /**
+           * List of hyperchain validators to initialize the hyperchain
+           */
+          initial_validators?: {
+            /**
+             * The validator operator account that would control it
+             */
+            owner?: {
+              [k: string]: unknown;
+            };
+            /**
+             * The validator node signing key. Defaults to owner.
+             */
+            sign_key?: {
+              [k: string]: unknown;
+            };
+            /**
+             * The registration contral call caller. Needs to be funded with the minimum stake + TX cost. Defaults to owner.
+             */
+            caller?: {
+              [k: string]: unknown;
+            };
+            /**
+             * The amount to stake
+             */
+            stake?: number;
+            /**
+             * Automatically stake the rewards
+             */
+            restake?: boolean;
           }[];
           [k: string]: unknown;
         };

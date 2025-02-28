@@ -1748,10 +1748,24 @@
                                             "default": 0,
                                             "type": "integer"
                                         },
+                                        "default_pinning_behavior": {
+                                            "description": "Use the default pinning behavior, where in each epoch, if the last leader has defined pinning/parent chain credentials, they will pin",
+                                            "default": false,
+                                            "type": "boolean"
+                                        },
                                         "fixed_coinbase": {
                                             "type": "integer",
                                             "default": 0,
                                             "description": "The coinbase reward specifies the fixed amount of newly minted tokens allocated to block producers as an incentive for validating and adding blocks to the chain."
+                                        },
+                                        "fee_distribution": {
+                                            "description": "The fees in a block are divided between the producer of the block, and the producer of the previous and next blocks. I.e. [30, 50, 20] would mean that the block producer gets 50% of the fees, the producer of the previous block gets 30% and the producer of the following block gets 20%.",
+                                            "type"  : "array",
+                                            "items" : {
+                                                "type" : "integer",
+                                                "description" : "Percentage of fees."
+                                            },
+                                            "default": [0, 100, 0]
                                         },
                                         "parent_chain": {
                                             "description" : "Details of how this node will connect to a parent chain if this is a hyperchain.",
@@ -1885,6 +1899,40 @@
                                                                 "default": ""
                                                             }
                                                         }
+                                                    }
+                                                },
+                                                "default": []
+                                            }
+                                        },
+                                        "initial_validators": {
+                                            "description" : "List of hyperchain validators to initialize the hyperchain",
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "object",
+                                                "additionalProperties" : false,
+                                                "description" : "Validator configuration",
+                                                "properties": {
+                                                   "owner": {
+                                                        "description": "The validator operator account that would control it",
+                                                        "pattern": "^ak_[1-9A-HJ-NP-Za-km-z]*:[0-9]+(:[0-9]*:[0-9]*){0,1}$"
+                                                    },
+                                                    "sign_key": {
+                                                        "description": "The validator node signing key. Defaults to owner.",
+                                                        "pattern": "^ak_[1-9A-HJ-NP-Za-km-z]*:[0-9]+(:[0-9]*:[0-9]*){0,1}$"
+                                                    },
+                                                    "caller": {
+                                                        "description": "The registration contral call caller. Needs to be funded with the minimum stake + TX cost. Defaults to owner.",
+                                                        "pattern": "^ak_[1-9A-HJ-NP-Za-km-z]*:[0-9]+(:[0-9]*:[0-9]*){0,1}$"
+                                                    },
+                                                    "stake": {
+                                                        "description": "The amount to stake",
+                                                        "type": "integer",
+                                                        "default": 0
+                                                    },
+                                                    "restake": {
+                                                        "description": "Automatically stake the rewards",
+                                                        "type": "boolean",
+                                                        "default": false
                                                     }
                                                 },
                                                 "default": []
