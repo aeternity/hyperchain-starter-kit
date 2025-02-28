@@ -616,6 +616,10 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "pool_adj",
+              "type": "int"
             }
           ],
           "name": "add_rewards",
@@ -704,6 +708,13 @@
           "payable": false,
           "returns": "int",
           "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_penalty_pool",
+          "payable": false,
+          "returns": "int",
+          "stateful": false
         }
       ],
       "kind": "contract_main",
@@ -740,6 +751,10 @@
           },
           {
             "name": "validator_min_stake",
+            "type": "int"
+          },
+          {
+            "name": "penalty_pool",
             "type": "int"
           },
           {

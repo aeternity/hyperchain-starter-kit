@@ -4,7 +4,7 @@ include "Pair.aes"
 contract interface MainStaking =
   entrypoint sorted_validators : () => list((address * int))
   entrypoint lock_stake  : (int) => list((address * int))
-  entrypoint add_rewards : (int, list(address * int)) => unit
+  entrypoint add_rewards : (int, list(address * int), int) => unit
 
 main contract HCElection =
   record epoch_info =
@@ -22,9 +22,10 @@ main contract HCElection =
 
   record vote =
     { producer    : address,
-      hash        : bytes(),
+      hash        : hash,
       epoch_delta : int,
-      signature   : bytes()
+      sign_data   : bytes(),
+      signature   : signature
     }
 
   record finalize_info =
@@ -40,6 +41,7 @@ main contract HCElection =
     { main_staking_ct       : MainStaking,
       leader                : address,
       rewards               : map(int, list(address * int)),
+      penalty_reward_diff   : int,
       epoch                 : int,
       epochs                : map(int, epoch_info),
       pin                   : option(bytes()),
@@ -55,6 +57,7 @@ main contract HCElection =
       epochs                = {},
       pin                   = None,
       finalize              = None,
+      penalty_reward_diff   = 0,
       pin_reward            = {base = 0, current = 0, carry_over = 0} }
 
   stateful entrypoint init_epochs(epoch_length : int, base_pin_reward : int) =
@@ -84,7 +87,7 @@ main contract HCElection =
     assert_protocol_call()
     put(state{ leader = leader })
 
-  stateful entrypoint step_eoe(leader : address, seed : bytes(), epoch_adjust : int,
+  stateful entrypoint step_eoe(leader : address, seed : bytes(),
                                next_base_pin_reward : int, carry_over_flag : bool) =
     assert_protocol_call()
     let epoch = state.epoch
@@ -100,8 +103,15 @@ main contract HCElection =
 
     // update epochs
     require(ei.start + ei.length - 1 == Chain.block_height, "This is not the end")
-    let ei2 = state.epochs[epoch + 2]
-    let ei_adjust = state.epochs[epoch + 3]{ length = ei2.length + epoch_adjust }
+    let ei_adjust =
+      switch(state.finalize)
+        None       => state.epochs[epoch + 3]
+        Some(info) =>
+          if ( info.epoch == epoch )
+            state.epochs[epoch + 3]{ length = info.epoch_length }
+          else
+            state.epochs[epoch + 3]
+
     let new_epochs = { [epoch] = state.epochs[epoch],
                        [epoch + 1] = state.epochs[epoch + 1],
                        [epoch + 2] = state.epochs[epoch + 2]{ seed = Some(seed) },
@@ -127,12 +137,31 @@ main contract HCElection =
     assert_protocol_call()
     put(state{rewards[height = []] @ rs = (to, Call.value) :: rs})
 
+
+
+  stateful entrypoint add_penalty(height : int, penalty : int, to : address) =
+      assert_protocol_call()
+      require(penalty > 0, "Penalty is expressed as a positive integer")
+      put(state{rewards[height = []] @ rs = (to, (-penalty)) :: rs})
+      put(state{penalty_reward_diff @ prd = prd + penalty})
+
+  stateful entrypoint add_reported_penalty(height : int, penalty : int, to : address, reporter : address, reporter_percentage : int) =
+      assert_protocol_call()
+      require(penalty > 0, "Penalty is expressed as a positive integer")
+      require(reporter_percentage >= 0 && reporter_percentage =< 100, "reporter reward percentage must be between 0 and 100")
+      put(state{rewards[height = []] @ rs = (to, (-penalty)) :: rs})
+      let reporter_reward = penalty * (100/reporter_percentage)
+      put(state{rewards[height = []] @ rs = (reporter, reporter_reward) :: rs})
+      put(state{penalty_reward_diff @ prd= prd + (penalty - reporter_reward)})
+
+
   stateful entrypoint finalize_epoch(epoch_number : int, fork : bytes(), epoch_length : int, pc_hash : bytes(), producer : address, votes : list(vote)) =
     let epoch = state.epoch
     let last = state.epochs[epoch].start + state.epochs[epoch].length - 1
     require(Chain.block_height == last, "Only in last block")
     require(Call.caller == state.leader, "Must be called by the last leader of epoch")
     require(epoch_number == state.epoch, "Not correct epoch")
+    require(List.all(validate_vote, votes), "Invalid vote")
     put(state{finalize=Some({epoch = epoch_number, fork = fork, epoch_length = epoch_length, pc_hash = pc_hash, producer = producer, votes = votes})})
 
   entrypoint leader() =
@@ -198,7 +227,10 @@ main contract HCElection =
   stateful function pay_rewards(e : int) =
     let ei = state.epochs[e]
     let (rewards, tot) = pay_rewards_(ei.start, ei.length, {}, 0)
-    state.main_staking_ct.add_rewards(value = tot, e, rewards)
+    let pen_diff = state.penalty_reward_diff
+    let pool_adjusted_total = tot + pen_diff
+    state.main_staking_ct.add_rewards(value = pool_adjusted_total, e, rewards, pen_diff)
+    put(state{penalty_reward_diff = 0})
 
   stateful function
     pay_rewards_(_, 0, acc, tot) = (Map.to_list(acc), tot)
@@ -212,3 +244,21 @@ main contract HCElection =
 
   function pay_reward_((acc, tot), (addr, amt)) =
     (acc{[addr = 0] @ r = r + amt}, tot + amt)
+
+  function validate_vote(vote) =
+    if(Crypto.verify_sig(vote.sign_data, vote.producer, vote.signature))
+      contains_bytes(vote.hash, vote.sign_data)
+    else
+      false
+
+  function contains_bytes(needle : hash, haystack : bytes()) : bool =
+    if(Bytes.size(haystack) < 32)
+      false
+    else
+      let Some((bs_, _)) = Bytes.split_any(haystack, 32)
+      let Some(bs__) = Bytes.to_fixed_size(bs_)
+      if(bs__ == needle)
+        true
+      else
+        let Some((_, haystack_)) = Bytes.split_any(haystack, 1)
+        contains_bytes(needle, haystack_)

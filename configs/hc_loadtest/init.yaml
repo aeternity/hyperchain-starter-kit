@@ -1,6 +1,8 @@
 childBlockTime: 3000
 childEpochLength: 600
+childBlockProductionTime: 500
 contractSourcesPrefix: 'https://raw.githubusercontent.com/aeternity/aeternity/master/'
+faucetInitBalance: 1000000000000000000000000000
 networkId: 'hc_loadtest'
 parentChain:
   epochLength: 10
@@ -12,3 +14,6 @@ validators:
   balance: 3100000000000000000000000000
   count: 3
   validatorMinStake: 1000000000000000000000000
+enablePinning: true
+pinningReward: 1000
+fixedCoinbase: 100

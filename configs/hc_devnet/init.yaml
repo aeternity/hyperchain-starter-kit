@@ -1,6 +1,7 @@
 childBlockTime: 3000
 childEpochLength: 600
-contractSourcesPrefix: 'https://raw.githubusercontent.com/aeternity/aeternity/refs/tags/v7.3.0-rc3/'
+childBlockProductionTime: 500
+contractSourcesPrefix: 'https://raw.githubusercontent.com/aeternity/aeternity/refs/tags/v7.3.0-rc4/'
 faucetInitBalance: 1000000000000000000000000000
 networkId: 'hc_devnet'
 parentChain:

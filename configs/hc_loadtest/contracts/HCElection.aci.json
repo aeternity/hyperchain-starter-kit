@@ -40,27 +40,51 @@
           "arguments": [
             {
               "name": "_1",
-              "type": "address"
+              "type": "int"
             }
           ],
-          "name": "is_validator",
+          "name": "lock_stake",
           "payable": false,
-          "returns": "bool",
+          "returns": {
+            "list": [
+              {
+                "tuple": [
+                  "address",
+                  "int"
+                ]
+              }
+            ]
+          },
           "stateful": false
         },
         {
-          "arguments": [],
-          "name": "total_stake",
-          "payable": false,
-          "returns": "int",
-          "stateful": false
-        },
-        {
-          "arguments": [],
-          "name": "post_elect",
+          "arguments": [
+            {
+              "name": "_1",
+              "type": "int"
+            },
+            {
+              "name": "_2",
+              "type": {
+                "list": [
+                  {
+                    "tuple": [
+                      "address",
+                      "int"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "_3",
+              "type": "int"
+            }
+          ],
+          "name": "add_rewards",
           "payable": false,
           "returns": "unit",
-          "stateful": true
+          "stateful": false
         }
       ],
       "kind": "contract_interface",
@@ -143,10 +167,6 @@
               }
             },
             {
-              "name": "epoch_adjust",
-              "type": "int"
-            },
-            {
               "name": "next_base_pin_reward",
               "type": "int"
             },
@@ -172,6 +192,118 @@
             }
           ],
           "name": "pin",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "name": "add_reward",
+          "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "penalty",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "name": "add_penalty",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "penalty",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "name": "reporter",
+              "type": "address"
+            },
+            {
+              "name": "reporter_percentage",
+              "type": "int"
+            }
+          ],
+          "name": "add_reported_penalty",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "epoch_number",
+              "type": "int"
+            },
+            {
+              "name": "fork",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "epoch_length",
+              "type": "int"
+            },
+            {
+              "name": "pc_hash",
+              "type": {
+                "bytes": "any"
+              }
+            },
+            {
+              "name": "producer",
+              "type": "address"
+            },
+            {
+              "name": "votes",
+              "type": {
+                "list": [
+                  "HCElection.vote"
+                ]
+              }
+            }
+          ],
+          "name": "finalize_epoch",
           "payable": false,
           "returns": {
             "tuple": []
@@ -284,6 +416,19 @@
           "payable": false,
           "returns": "HCElection.pin_reward_info",
           "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "finalize_info",
+          "payable": false,
+          "returns": {
+            "option": [
+              {
+                "HCElection.finalize_info": []
+              }
+            ]
+          },
+          "stateful": false
         }
       ],
       "kind": "contract_main",
@@ -300,7 +445,25 @@
             "type": "address"
           },
           {
-            "name": "added_stake",
+            "name": "rewards",
+            "type": {
+              "map": [
+                "int",
+                {
+                  "list": [
+                    {
+                      "tuple": [
+                        "address",
+                        "int"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "penalty_reward_diff",
             "type": "int"
           },
           {
@@ -329,6 +492,16 @@
           {
             "name": "pin_reward",
             "type": "HCElection.pin_reward_info"
+          },
+          {
+            "name": "finalize",
+            "type": {
+              "option": [
+                {
+                  "HCElection.finalize_info": []
+                }
+              ]
+            }
           }
         ]
       },
@@ -391,6 +564,76 @@
               {
                 "name": "carry_over",
                 "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "vote",
+          "typedef": {
+            "record": [
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "hash",
+                "type": "hash"
+              },
+              {
+                "name": "epoch_delta",
+                "type": "int"
+              },
+              {
+                "name": "sign_data",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "signature",
+                "type": "signature"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "finalize_info",
+          "typedef": {
+            "record": [
+              {
+                "name": "epoch",
+                "type": "int"
+              },
+              {
+                "name": "fork",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "epoch_length",
+                "type": "int"
+              },
+              {
+                "name": "pc_hash",
+                "type": {
+                  "bytes": "any"
+                }
+              },
+              {
+                "name": "producer",
+                "type": "address"
+              },
+              {
+                "name": "votes",
+                "type": {
+                  "list": [
+                    "HCElection.vote"
+                  ]
+                }
               }
             ]
           },
