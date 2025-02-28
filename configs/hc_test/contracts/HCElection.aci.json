@@ -75,6 +75,10 @@
                   }
                 ]
               }
+            },
+            {
+              "name": "_3",
+              "type": "int"
             }
           ],
           "name": "add_rewards",
@@ -163,10 +167,6 @@
               }
             },
             {
-              "name": "epoch_adjust",
-              "type": "int"
-            },
-            {
               "name": "next_base_pin_reward",
               "type": "int"
             },
@@ -211,6 +211,58 @@
           ],
           "name": "add_reward",
           "payable": true,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "penalty",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "name": "add_penalty",
+          "payable": false,
+          "returns": {
+            "tuple": []
+          },
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "height",
+              "type": "int"
+            },
+            {
+              "name": "penalty",
+              "type": "int"
+            },
+            {
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "name": "reporter",
+              "type": "address"
+            },
+            {
+              "name": "reporter_percentage",
+              "type": "int"
+            }
+          ],
+          "name": "add_reported_penalty",
+          "payable": false,
           "returns": {
             "tuple": []
           },
@@ -411,6 +463,10 @@
             }
           },
           {
+            "name": "penalty_reward_diff",
+            "type": "int"
+          },
+          {
             "name": "epoch",
             "type": "int"
           },
@@ -523,19 +579,21 @@
               },
               {
                 "name": "hash",
-                "type": {
-                  "bytes": "any"
-                }
+                "type": "hash"
               },
               {
                 "name": "epoch_delta",
                 "type": "int"
               },
               {
-                "name": "signature",
+                "name": "sign_data",
                 "type": {
                   "bytes": "any"
                 }
+              },
+              {
+                "name": "signature",
+                "type": "signature"
               }
             ]
           },

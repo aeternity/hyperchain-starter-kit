@@ -13,6 +13,7 @@ const Consensus = z
       .object({
         child_block_time: z.bigint(),
         child_epoch_length: z.bigint(),
+        child_block_production_time: z.bigint(),
         contract_owner: z.literal(OWNER_ADDR),
         staking_contract: ContractAddr,
         election_contract: ContractAddr,
@@ -123,6 +124,7 @@ export function genAeternityConf(
             rewards_contract: mainStaking.init.pubkey,
             child_block_time: conf.childBlockTime,
             child_epoch_length: conf.childEpochLength,
+            child_block_production_time: conf.childBlockProductionTime,
             pinning_reward_value: conf.pinningReward,
             fixed_coinbase: conf.fixedCoinbase,
             default_pinning_behavior: conf.enablePinning,
