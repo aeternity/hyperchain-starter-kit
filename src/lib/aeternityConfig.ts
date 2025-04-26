@@ -123,6 +123,7 @@ export function genAeternityConf(
             rewards_contract: mainStaking.init.pubkey,
             child_block_time: conf.childBlockTime,
             child_epoch_length: conf.childEpochLength,
+            child_block_production_time: conf.childBlockProductionTime,
             pinning_reward_value: conf.pinningReward,
             fixed_coinbase: conf.fixedCoinbase,
             default_pinning_behavior: conf.enablePinning,
