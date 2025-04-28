@@ -9,6 +9,7 @@ import { getParentNodeURL } from "./aeParent.js";
 export const InitConfig = z.object({
   networkId: z.string(),
   childBlockTime: z.bigint(),
+  childBlockProductionTime: z.bigint(),
   childEpochLength: z.bigint(),
   pinningReward: z.bigint(),
   fixedCoinbase: z.bigint(),
@@ -35,6 +36,7 @@ export const defaultInitConf = (networkId: string): InitConfig => {
   return {
     networkId,
     childBlockTime: 3000n,
+    childBlockProductionTime: 500n,
     // should be ~10 parent blocks in child blocks
     // in case of 180s block time of AE and 3s block time of the child chain
     // 180s * 10 = 1800/3 = 600
