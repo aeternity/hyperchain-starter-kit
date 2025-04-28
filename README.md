@@ -75,6 +75,7 @@ See the [Aeternity Node Documentation](https://github.com/aeternity/aeternity/tr
 The tool generates a default configuration in `init.yaml`:
 
 ```yaml
+childBlockProductionTime: 500
 childBlockTime: 3000
 childEpochLength: 600
 enablePinning: true
